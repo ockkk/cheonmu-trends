@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>트렌드 리포트 · 2026-11-18 · 천무스튜디오</title>
 <style>
-  .cds{
+  :root{
     color-scheme: light;
     --primary:#3E63DD; --on-primary:#FFFFFF;
     --secondary:#ECEEF5; --on-secondary:#171719;
@@ -18,7 +18,7 @@
     --error:#B42318; --error-container:#FFEDEB;
   }
   @media (prefers-color-scheme: dark){
-    :root:where(:not([data-theme="light"])) .cds{
+    :root:where(:not([data-theme="light"])){
       color-scheme: dark;
       --primary:#7CA0FF; --on-primary:#0E1836;
       --secondary:#2A3350; --on-secondary:#F4F4F5;
@@ -35,6 +35,7 @@
   body{margin:0; background:var(--neutral); color:var(--on-surface);
     font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;
     font-size:14px; line-height:1.5;}
+  a{color:var(--info); text-underline-offset:2px;}
   .wrap{max-width:1040px; margin:0 auto; padding:24px 20px 56px;}
 
   header.top{margin-bottom:18px;}
