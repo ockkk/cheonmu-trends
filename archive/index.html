@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지난 트렌드 리포트 · 천무스튜디오</title>
+<style>
+  :root{--neutral:#F4F4F5;--surface:#FFF;--on-surface:#171719;--outline:#E5E5E8;--primary:#3E63DD;color-scheme:light dark}
+  @media(prefers-color-scheme:dark){:root{--neutral:#0B0B0D;--surface:#1D1D22;--on-surface:#F4F4F5;--outline:#43434B;--primary:#8DB2FF}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--neutral);color:var(--on-surface);font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:24px 20px 56px}
+  h1{font-size:22px;font-weight:600;margin:0 0 16px}
+  .site-list{list-style:none;padding:0;margin:0;background:var(--surface);border:1px solid var(--outline);border-radius:8px}
+  .site-list li + li{border-top:1px solid var(--outline)}
+  .site-list a{display:block;padding:12px 14px;color:var(--on-surface);text-underline-offset:3px}
+
+  .site-nav{display:flex; align-items:center; flex-wrap:wrap; gap:6px 16px; margin:0 0 20px; font-size:13px;}
+  .site-nav a{color:var(--on-surface); text-underline-offset:3px;}
+  .site-nav a[aria-current]{font-weight:700;}
+  .site-nav a:focus-visible,.site-list a:focus-visible{outline:2px solid var(--primary); outline-offset:4px;}
+  @media (max-width:620px){
+    .wrap{padding:18px 14px 40px;}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));}
+    .tab-btn{margin-right:5px;}
+    .barrow{grid-template-columns:minmax(0,1fr) minmax(50px,1fr) 48px; gap:5px;}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="site-nav" aria-label="리포트 탐색"><a href="../">최신 리포트</a><a href="../archive/" aria-current="page">지난 리포트</a></nav>
+  <h1>천무스튜디오 지난 트렌드 리포트</h1>
+  <ul class="site-list">
+      <li><a href="../reports/2026-11-18.html">2026년 11월 18일 리포트</a></li>
+  </ul>
+</main>
+</body>
+</html>

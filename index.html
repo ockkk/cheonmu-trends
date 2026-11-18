@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>트렌드 리포트 · 2026-11-18 · 천무스튜디오</title>
+<style>
+  .cds{
+    color-scheme: light;
+    --primary:#3E63DD; --on-primary:#FFFFFF;
+    --secondary:#ECEEF5; --on-secondary:#171719;
+    --neutral:#F4F4F5; --surface:#FFFFFF; --surface-raised:#FFFFFF; --surface-muted:#F7F7F8;
+    --on-surface:#171719; --on-surface-variant:#55555B;
+    --outline:#8A8A93; --outline-variant:#E5E5E8;
+    --success:#067647; --success-container:#EAF8F0;
+    --warning:#A15C00; --warning-container:#FFF5E4;
+    --info:#245BC7; --info-container:#ECF1FF;
+    --error:#B42318; --error-container:#FFEDEB;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])) .cds{
+      color-scheme: dark;
+      --primary:#7CA0FF; --on-primary:#0E1836;
+      --secondary:#2A3350; --on-secondary:#F4F4F5;
+      --neutral:#0B0B0D; --surface:#1D1D22; --surface-raised:#26262C; --surface-muted:#27272D;
+      --on-surface:#F4F4F5; --on-surface-variant:#B5B5BB;
+      --outline:#85858E; --outline-variant:#43434B;
+      --success:#6DDB9E; --success-container:#0D3C22;
+      --warning:#FFC36D; --warning-container:#412708;
+      --info:#8DB2FF; --info-container:#0C2355;
+      --error:#FF8A80; --error-container:#441310;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--neutral); color:var(--on-surface);
+    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;
+    font-size:14px; line-height:1.5;}
+  .wrap{max-width:1040px; margin:0 auto; padding:24px 20px 56px;}
+
+  header.top{margin-bottom:18px;}
+  header.top .eyebrow{color:var(--on-surface-variant); font-size:12px; margin-bottom:4px;}
+  header.top h1{font-size:22px; font-weight:600; letter-spacing:-0.3px; margin:0 0 4px;}
+  header.top p{color:var(--on-surface-variant); font-size:12.5px; margin:0;}
+
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 20px;}
+  .kpi{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:10px; padding:12px 14px;}
+  .kpi .label{font-size:11.5px; color:var(--on-surface-variant); margin-bottom:6px;}
+  .kpi .value{font-size:22px; font-weight:700; letter-spacing:-0.3px; font-variant-numeric:tabular-nums;}
+  .kpi .value small{font-size:12px; font-weight:500; color:var(--on-surface-variant);}
+  .kpi.info .value{color:var(--info);}
+  .kpi.success .value{color:var(--success);}
+  .kpi.warning .value{color:var(--warning);}
+
+  .tabs{display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; border-bottom:1px solid var(--outline-variant);}
+  .tab-btn{appearance:none; background:none; border:none; cursor:pointer; font-family:inherit;
+    font-size:13px; font-weight:600; color:var(--on-surface-variant); padding:8px 4px; margin-right:16px; border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--on-surface); border-bottom-color:var(--primary);}
+  .tab-panel{display:none;} .tab-panel.active{display:block;}
+
+  section{margin-top:22px;}
+  h2{font-size:14px; font-weight:600; margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid var(--outline-variant);}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px;}
+  .card{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:8px; padding:11px 13px; display:flex; flex-direction:column; gap:5px;}
+  .card .rank{font-size:11px; color:var(--on-surface-variant); font-variant-numeric:tabular-nums;}
+  .card h3{font-size:13.5px; font-weight:600; margin:0;}
+  .card h3 a{color:var(--on-surface); text-decoration:none;}
+  .card h3 a:hover{text-decoration:underline;}
+  .card p{font-size:12px; color:var(--on-surface-variant); margin:0;}
+  .card .why{font-size:11.5px; color:var(--on-surface-variant); font-style:italic;}
+  .tags{display:flex; gap:4px; flex-wrap:wrap;}
+  .tag{font-size:10.5px; font-weight:500; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center;}
+  .tag.vibe{background:var(--info-container); color:var(--info);}
+  .tag.auto{background:var(--success-container); color:var(--success);}
+  .tag.ref{background:var(--secondary); color:var(--on-secondary);}
+  .tag.src-gh{background:var(--surface-muted); color:var(--on-surface-variant); border:1px solid var(--outline-variant);}
+  .tag.src-ph{background:var(--warning-container); color:var(--warning);}
+  .tag.src-hn{background:var(--secondary); color:var(--on-secondary); border:1px solid var(--outline);}
+  .tag.src-reddit{background:var(--error-container); color:var(--error);}
+  .tagstack{display:flex; gap:4px; flex-wrap:wrap;}
+  .streak-badge{font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-block; background:var(--success-container); color:var(--success);}
+  .streak-badge.new{background:var(--surface-muted); color:var(--on-surface-variant); font-weight:500;}
+  .fit{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;}
+  .fit .dot{width:7px; height:7px; border-radius:50%; display:inline-block;}
+  .fit.high .dot{background:var(--success);}
+  .fit.mid .dot{background:var(--warning);}
+  .fit.low .dot{background:var(--error);}
+
+  .barlist{display:flex; flex-direction:column; gap:8px;}
+  .barrow{display:grid; grid-template-columns:150px 1fr 56px; gap:10px; align-items:center; font-size:12.5px;}
+  .barrow .name{color:var(--on-surface-variant); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .bartrack{background:var(--surface-muted); border-radius:4px; height:14px; position:relative;}
+  .barfill{background:var(--primary); height:100%; border-radius:4px; min-width:4px;}
+  .barrow .val{font-variant-numeric:tabular-nums; color:var(--on-surface); font-weight:600;}
+  .barnote{font-size:11.5px; color:var(--on-surface-variant); margin-top:10px;}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{text-align:left; font-size:11px; font-weight:600; color:var(--on-surface-variant); padding:7px 9px; border-bottom:1px solid var(--outline-variant); white-space:nowrap;}
+  tbody td{padding:7px 9px; border-bottom:1px solid var(--outline-variant); vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-muted);}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  td.repo a{color:var(--on-surface); font-weight:600; text-decoration:none;}
+  td.repo a:hover{text-decoration:underline;}
+  td.desc{color:var(--on-surface-variant); max-width:280px;}
+  .tablewrap{overflow-x:auto; border:1px solid var(--outline-variant); border-radius:8px;}
+  .tablewrap table{border:none;}
+  .note{font-size:11px; color:var(--on-surface-variant); margin-top:8px;}
+
+  ul.flow{margin:0; padding-left:18px; color:var(--on-surface-variant); font-size:13px;}
+  ul.flow li{margin-bottom:6px;}
+
+  .ideas{display:flex; flex-direction:column; gap:10px;}
+  .idea{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:8px; padding:12px 14px;}
+  .idea .title{font-weight:700; font-size:13.5px; color:var(--on-surface); margin-bottom:4px;}
+  .idea .target{font-size:11.5px; color:var(--on-surface-variant);}
+
+  footer{margin-top:32px; font-size:11px; color:var(--on-surface-variant); border-top:1px solid var(--outline-variant); padding-top:12px;}
+
+  .site-nav{display:flex; align-items:center; flex-wrap:wrap; gap:6px 16px; margin:0 0 20px; font-size:13px;}
+  .site-nav a{color:var(--on-surface); text-underline-offset:3px;}
+  .site-nav a[aria-current]{font-weight:700;}
+  .site-nav a:focus-visible,.site-list a:focus-visible{outline:2px solid var(--primary); outline-offset:4px;}
+  @media (max-width:620px){
+    .wrap{padding:18px 14px 40px;}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));}
+    .tab-btn{margin-right:5px;}
+    .barrow{grid-template-columns:minmax(0,1fr) minmax(50px,1fr) 48px; gap:5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap cds">
+  <nav class="site-nav" aria-label="리포트 탐색"><a href="./" aria-current="page">최신 리포트</a><a href="./archive/">지난 리포트</a></nav>
+
+  <header class="top">
+    <div class="eyebrow">천무스튜디오 · 트렌드 리포트</div>
+    <h1>2026년 11월 18일 (수요일)</h1>
+    <p>비전공자 대상 콘텐츠 소재 — 바이브코딩(AI에게 말로 시켜 서비스 만들기) · 업무자동화(반복 업무 자동화) 독자 기준으로 정리. GitHub은 09:00 KST, Product Hunt는 09:40 KST 수집 · 오늘은 수요일이라 weekly 목록은 생략(월요일에만 수집).</p>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi info"><div class="label">오늘 GitHub 레포</div><div class="value">15<small> 개</small></div></div>
+    <div class="kpi info"><div class="label">Product Hunt 신제품</div><div class="value">10<small> 개</small></div></div>
+    <div class="kpi success"><div class="label">연속 트렌딩(2일+)</div><div class="value">9<small> 개</small></div></div>
+    <div class="kpi warning"><div class="label">GitHub·PH 독자 적합 비중</div><div class="value">28<small>%</small></div></div>
+  </div>
+
+  <section>
+    <h2>오늘의 추천 콘텐츠 소재</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="rank">#1</div>
+        <h3><a href="https://github.com/dream-num/univer" target="_blank">dream-num/univer</a></h3>
+        <div class="tags"><span class="tag src-gh">GitHub</span><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div>
+        <p>엑셀·워드 같은 표/문서를 웹에서 편집하는 오픈소스 오피스 엔진. 사람과 AI가 같은 문서를 함께 다룰 수 있게 설계됨.</p>
+        <p class="why">설치 없이 <a href="https://univer.ai/demo/spreadsheets" target="_blank">웹 데모</a> 바로 체험 · 3일 연속 트렌딩 · 오늘 스타 1위(+1,776)</p>
+        <p class="posttitle">제목 아이디어: "엑셀 몰라도 AI가 표·문서 만들어주는 시대 — Univer, 3일째 1위 비결"</p>
+      </div>
+      <div class="card">
+        <div class="rank">#2</div>
+        <h3><a href="https://github.com/mvanhorn/last30days-skill" target="_blank">mvanhorn/last30days-skill</a></h3>
+        <div class="tags"><span class="tag src-gh">GitHub</span><span class="tag auto">업무자동화</span></div>
+        <p>레딧·트위터·유튜브·해커뉴스 등을 AI가 대신 돌아다니며 최근 화제를 모아 요약해주는 "연구 비서" 스킬.</p>
+        <p class="why">텔레그램으로 바로 체험 가능 · GitHub "오늘의 저장소 1위" + Trendshift 인증, 2일 연속 트렌딩</p>
+        <p class="posttitle">제목 아이디어: "레딧·트위터 안 봐도 AI가 요즘 화제를 텔레그램으로 — 이틀 연속 '오늘의 저장소'"</p>
+      </div>
+      <div class="card">
+        <div class="rank">#3</div>
+        <h3><a href="https://www.producthunt.com/products/creatify" target="_blank">Creatify Max</a></h3>
+        <div class="tags"><span class="tag src-ph">Product Hunt</span><span class="tag auto">업무자동화</span></div>
+        <p>광고 기획부터 제작·실행까지 대신해주는 "AI 광고 담당자". 코딩 없이 마케팅 반복 업무를 맡길 수 있음.</p>
+        <p class="why">오늘 Product Hunt 3위(추천 296) · 회원가입만 하면 바로 사용 가능</p>
+        <p class="posttitle">제목 아이디어: "광고 기획부터 제작·실행까지 AI 담당자 하나로 — Creatify Max, 오늘 Product Hunt 3위"</p>
+      </div>
+      <div class="card">
+        <div class="rank">#4</div>
+        <h3><a href="https://www.reddit.com/r/SideProject/comments/1xujcv6/saw_an_ad_for_an_expensive_teleprompter_that_just/" target="_blank">NotchPrompter</a></h3>
+        <div class="tags"><span class="tag src-reddit">Reddit</span><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div>
+        <p>맥에서 발표나 촬영 대본을 카메라 아래에 띄우고, 말하는 속도에 맞춰 넘겨주는 오픈소스 앱.</p>
+        <p class="why">제작자가 말을 멈추거나 대사를 건너뛸 때를 직접 시험하고 Claude Code에 수정할 내용을 전달한 과정을 공개했어요.</p>
+        <p class="posttitle">제목 아이디어 · 내가 멈추면 대본도 멈춘다. Claude Code로 만든 발표 도구</p>
+      </div>
+      <div class="card">
+        <div class="rank">#5</div>
+        <h3><a href="https://github.com/backnotprop/plannotator" target="_blank">backnotprop/plannotator</a></h3>
+        <div class="tags"><span class="tag src-gh">GitHub</span><span class="tag vibe">바이브코딩</span></div>
+        <p>AI 코딩 에이전트가 짠 계획·코드에 댓글을 남기면 바로 에이전트에게 피드백이 전달되는 "에이전트 감독" 도구.</p>
+        <p class="why">에이전트의 메시지·질문을 한곳에 모아보는 "Inbox" 신기능 공개 · 3일 연속 트렌딩</p>
+        <p class="posttitle">제목 아이디어: "AI 코딩 에이전트에게 '이거 말고 이렇게 해줘' 피드백 주는 법 — Plannotator Inbox"</p>
+      </div>
+      <div class="card">
+        <div class="rank">#6</div>
+        <h3><a href="https://news.ycombinator.com/item?id=50534235" target="_blank">Spreadsheet to App</a></h3>
+        <div class="tags"><span class="tag src-hn">Show HN</span><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div>
+        <p>엑셀이나 구글 시트로 관리하던 데이터를 검색·수정할 수 있는 웹앱을 말로 만들어 달라고 요청하는 도구.</p>
+        <p class="why">기존 재고표가 앱으로 바뀌면 어떤지 <a href="https://spreadsheettoapp.ai/spreadsheet-to-inventory-app" target="_blank">샘플 재고 앱</a>으로 체험 가능 · 내 데이터로 만들려면 Google 연결 필요</p>
+        <p class="posttitle">제목 아이디어 · 엑셀 재고표를 팀이 쓰는 웹앱으로 바꿔봤어요</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="github">GitHub Trending</button>
+    <button class="tab-btn" data-tab="ph">Product Hunt</button>
+    <button class="tab-btn" data-tab="hn">Show HN</button>
+    <button class="tab-btn" data-tab="reddit">Reddit</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-github">
+
+  <section>
+    <h2>오늘 스타 많이 늘어난 순 (전체 15개)</h2>
+    <div class="barlist">
+      <div class="barrow"><div class="name">univer</div><div class="bartrack"><div class="barfill" style="width:100%"></div></div><div class="val">+1,776</div></div>
+      <div class="barrow"><div class="name">ag-ui</div><div class="bartrack"><div class="barfill" style="width:81.3%"></div></div><div class="val">+1,444</div></div>
+      <div class="barrow"><div class="name">paper-orchestra</div><div class="bartrack"><div class="barfill" style="width:66.2%"></div></div><div class="val">+1,175</div></div>
+      <div class="barrow"><div class="name">Claude-BugHunter</div><div class="bartrack"><div class="barfill" style="width:56.7%"></div></div><div class="val">+1,007</div></div>
+      <div class="barrow"><div class="name">ECC</div><div class="bartrack"><div class="barfill" style="width:50.8%"></div></div><div class="val">+902</div></div>
+      <div class="barrow"><div class="name">last30days-skill</div><div class="bartrack"><div class="barfill" style="width:43.5%"></div></div><div class="val">+772</div></div>
+      <div class="barrow"><div class="name">open-code-review</div><div class="bartrack"><div class="barfill" style="width:43.0%"></div></div><div class="val">+764</div></div>
+      <div class="barrow"><div class="name">plannotator</div><div class="bartrack"><div class="barfill" style="width:38.9%"></div></div><div class="val">+691</div></div>
+      <div class="barrow"><div class="name">arcane</div><div class="bartrack"><div class="barfill" style="width:36.8%"></div></div><div class="val">+654</div></div>
+      <div class="barrow"><div class="name">superpowers</div><div class="bartrack"><div class="barfill" style="width:33.7%"></div></div><div class="val">+598</div></div>
+      <div class="barrow"><div class="name">LoopForge</div><div class="bartrack"><div class="barfill" style="width:33.2%"></div></div><div class="val">+590</div></div>
+      <div class="barrow"><div class="name">svelte</div><div class="bartrack"><div class="barfill" style="width:30.0%"></div></div><div class="val">+533</div></div>
+      <div class="barrow"><div class="name">stitch-skills</div><div class="bartrack"><div class="barfill" style="width:19.7%"></div></div><div class="val">+350</div></div>
+      <div class="barrow"><div class="name">cursor/plugins</div><div class="bartrack"><div class="barfill" style="width:11.0%"></div></div><div class="val">+196</div></div>
+      <div class="barrow"><div class="name">minimind</div><div class="bartrack"><div class="barfill" style="width:10.6%"></div></div><div class="val">+188</div></div>
+    </div>
+    <p class="barnote">값은 2026-11-18 09:00 KST 수집 시점 GitHub Trending 페이지의 "오늘 늘어난 스타" 수.</p>
+  </section>
+
+  <section>
+    <h2>전체 목록</h2>
+    <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>레포</th><th class="num">오늘★</th><th class="num">전체★</th><th>연속</th><th>독자</th><th>활용도</th><th>설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="repo"><a href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank">elementalsouls/Claude-BugHunter</a></td>
+          <td class="num">+1,007</td><td class="num">9,219</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">Claude Code용 보안 취약점 탐지 스킬 모음. 보안 전문가용.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="repo"><a href="https://github.com/mvanhorn/last30days-skill" target="_blank">mvanhorn/last30days-skill</a></td>
+          <td class="num">+772</td><td class="num">69,027</td>
+          <td><span class="streak-badge">2일째</span></td>
+          <td><span class="tag auto">업무자동화</span></td>
+          <td><span class="fit high"><span class="dot"></span>상</span></td>
+          <td class="desc">레딧·X·유튜브 등 화제를 AI가 모아 요약. 텔레그램으로 코딩 없이 사용.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="repo"><a href="https://github.com/alibaba/open-code-review" target="_blank">alibaba/open-code-review</a></td>
+          <td class="num">+764</td><td class="num">53,709</td>
+          <td><span class="streak-badge">3일째</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">알리바바가 공개한 AI 코드 검토 도구. Git·터미널 사용하는 개발팀용.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="repo"><a href="https://github.com/Tencent/LoopForge" target="_blank">Tencent/LoopForge</a></td>
+          <td class="num">+590</td><td class="num">3,106</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">텐센트의 AI 코딩 에이전트 팀 작업실. Docker·서버 운영 필요.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="repo"><a href="https://github.com/dream-num/univer" target="_blank">dream-num/univer</a></td>
+          <td class="num">+1,776</td><td class="num">28,887</td>
+          <td><span class="streak-badge">3일째</span></td>
+          <td><span class="tagstack"><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></span></td>
+          <td><span class="fit high"><span class="dot"></span>상</span></td>
+          <td class="desc">엑셀·워드급 문서를 웹에서 편집하는 오픈소스 오피스 엔진. 설치 없이 데모 체험 가능.</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="repo"><a href="https://github.com/getarcaneapp/arcane" target="_blank">getarcaneapp/arcane</a></td>
+          <td class="num">+654</td><td class="num">9,306</td>
+          <td><span class="streak-badge">2일째</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">도커(서버 프로그램) 관리 화면. 도커를 이미 쓰는 사람용.</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="repo"><a href="https://github.com/google-labs-code/stitch-skills" target="_blank">google-labs-code/stitch-skills</a></td>
+          <td class="num">+350</td><td class="num">10,087</td>
+          <td><span class="streak-badge">3일째</span></td>
+          <td><span class="tag vibe">바이브코딩</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">구글 디자인 도구 Stitch를 AI 코딩 도구에서 말로 다루게 하는 스킬. 개발 환경 구성 필요.</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td class="repo"><a href="https://github.com/cursor/plugins" target="_blank">cursor/plugins</a></td>
+          <td class="num">+196</td><td class="num">16,887</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">Cursor 공식 플러그인 모음. Cursor를 쓰는 개발자 대상.</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td class="repo"><a href="https://github.com/obra/superpowers" target="_blank">obra/superpowers</a></td>
+          <td class="num">+598</td><td class="num">319,308</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">AI 코딩 에이전트용 개발 방법론·스킬 묶음. 숙련자 대상.</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td class="repo"><a href="https://github.com/ag-ui-protocol/ag-ui" target="_blank">ag-ui-protocol/ag-ui</a></td>
+          <td class="num">+1,444</td><td class="num">19,981</td>
+          <td><span class="streak-badge">3일째</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit mid"><span class="dot"></span>중</span></td>
+          <td class="desc">AI 에이전트가 화면(앱·챗봇)과 대화하도록 만든 공통 표준. 개발 지식 필요.</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td class="repo"><a href="https://github.com/backnotprop/plannotator" target="_blank">backnotprop/plannotator</a></td>
+          <td class="num">+691</td><td class="num">13,057</td>
+          <td><span class="streak-badge">3일째</span></td>
+          <td><span class="tag vibe">바이브코딩</span></td>
+          <td><span class="fit mid"><span class="dot"></span>중</span></td>
+          <td class="desc">AI 코딩 에이전트의 계획·코드를 보고 댓글 남기면 바로 전달되는 감독 도구. "Inbox" 신기능 공개.</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td class="repo"><a href="https://github.com/sveltejs/svelte" target="_blank">sveltejs/svelte</a></td>
+          <td class="num">+533</td><td class="num">89,582</td>
+          <td><span class="streak-badge">2일째</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">웹사이트를 만드는 코드 작성 도구(프레임워크). 개발자용.</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td class="repo"><a href="https://github.com/affaan-m/ECC" target="_blank">affaan-m/ECC</a></td>
+          <td class="num">+902</td><td class="num">305,481</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">여러 AI 코딩 에이전트의 스킬·기억·보안을 통합 관리하는 고급 도구. 숙련 개발자용.</td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td class="repo"><a href="https://github.com/jingyaogong/minimind" target="_blank">jingyaogong/minimind</a></td>
+          <td class="num">+188</td><td class="num">65,939</td>
+          <td><span class="streak-badge new">신규</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit mid"><span class="dot"></span>중</span></td>
+          <td class="desc">2시간·소액으로 초소형 AI 언어모델을 직접 학습시켜보는 교육용 프로젝트. 온라인 데모는 클릭만으로 체험.</td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td class="repo"><a href="https://github.com/google-research/paper-orchestra" target="_blank">google-research/paper-orchestra</a></td>
+          <td class="num">+1,175</td><td class="num">2,956</td>
+          <td><span class="streak-badge">2일째</span></td>
+          <td><span class="tag ref">참고</span></td>
+          <td><span class="fit low"><span class="dot"></span>하</span></td>
+          <td class="desc">여러 AI가 역할을 나눠 학술 논문을 자동 작성. 연구자용, 웹 데모 없음.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-ph">
+
+  <section>
+    <h2>오늘의 프로덕트헌트 신제품 (Top 10)</h2>
+    <p class="note">GitHub은 오픈소스 코드·라이브러리 중심이라 개발자 느낌이 강한 반면, Product Hunt는 바로 써볼 수 있는 완성된 서비스·앱이 많아 비전공자 콘텐츠에 보완적입니다.</p>
+    <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>제품</th><th>카테고리</th><th class="num">오늘 추천수</th><th class="num">댓글</th><th>독자</th><th>설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/rankspot" target="_blank">RankSpot</a></td>
+          <td>Marketing·SEO·MCP</td><td class="num">350</td><td class="num">95</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">AI 에이전트가 검색 노출을 대신 관리해주는 사용량 기반 SEO 서비스. 에이전트 인프라 성격이라 비전공자 활용도는 낮음.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/thebold" target="_blank">TheBold</a></td>
+          <td>Venture Capital·Fundraising</td><td class="num">327</td><td class="num">67</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">스타트업의 실행 기록을 투자자 미팅으로 바로 연결해주는 서비스. 창업팀 전용.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/creatify" target="_blank">Creatify Max</a></td>
+          <td>Marketing·Advertising</td><td class="num">296</td><td class="num">123</td>
+          <td><span class="tag auto">업무자동화</span></td>
+          <td class="desc">광고 기획부터 제작·실행까지 대신해주는 "AI 광고 담당자". 코딩 없이 마케팅 반복 업무를 맡길 수 있음.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/appxiom" target="_blank">Appxiom</a></td>
+          <td>Developer Tools·AI</td><td class="num">228</td><td class="num">29</td>
+          <td><span class="tag vibe">바이브코딩</span></td>
+          <td class="desc">AI 코딩 에이전트가 만든 버그를 맥락을 보고 잡아주는 도구. 바이브코딩으로 서비스 만드는 사람에게 안전망 역할.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/ekline" target="_blank">EkLine</a></td>
+          <td>SEO·Developer Tools</td><td class="num">217</td><td class="num">98</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">API·개발자 도구 회사 전용 AI SEO 서비스. 대상이 좁음.</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/versine" target="_blank">Versine</a></td>
+          <td>Fintech·Payments·MCP</td><td class="num">183</td><td class="num">45</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">AI 에이전트가 사람 대신 돈을 주고받게 하는 "에이전트용 간편결제". 아직 실험적인 인프라 영역.</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/superlog" target="_blank">superlog</a></td>
+          <td>Developer Tools·MCP</td><td class="num">174</td><td class="num">34</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">모니터링으로도 못 잡는 운영 버그를 찾아주는 도구. 서버 운영 개발자용.</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/vinc" target="_blank">VINC</a></td>
+          <td>Movies·AI·Video</td><td class="num">149</td><td class="num">13</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">AI로 영화적인 영상을 만드는 제작 도구. 전문 영상 제작 영역이라 참고용.</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/seshka" target="_blank">seshka</a></td>
+          <td>Mac·Open Source·Developer Tools</td><td class="num">118</td><td class="num">24</td>
+          <td><span class="tag vibe">바이브코딩</span></td>
+          <td class="desc">Claude Code가 작업하며 남긴 임시 파일·찌꺼기를 정리해주는 맥용 도구. Claude Code로 바이브코딩하는 사람에게 바로 쓸모.</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td class="repo"><a href="https://www.producthunt.com/products/stencil-by-superhands" target="_blank">Superhands</a></td>
+          <td>Design Tools·Developer Tools·AI</td><td class="num">103</td><td class="num">5</td>
+          <td><span class="tag ref">참고</span></td>
+          <td class="desc">결과물 하나하나가 아니라 디자인 시스템 자체를 만들게 해주는 도구. 전문 디자이너 대상.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="barnote">추천수는 2026-11-18 09:40 KST, 댓글수는 같은 날 11:49 KST 기준 producthunt.com "Top Products Launching Today" 순위 값(둘 다 페이지에 표시된 값만 사용, 추정 없음). 추천수는 투표가 계속 들어와 수집 시점마다 달라질 수 있음.</p>
+  </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-hn">
+    <section>
+      <h2>Show HN에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>원문 순위</th><th>프로젝트</th><th class="num">포인트</th><th class="num">댓글</th><th>독자</th><th>설명</th><th>체험</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>9</td>
+              <td class="repo"><a href="https://news.ycombinator.com/item?id=50534235" target="_blank">Spreadsheet to App</a></td>
+              <td class="num">3</td><td class="num">2</td>
+              <td><div class="tagstack"><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div></td>
+              <td class="desc">엑셀·CSV·구글 시트로 관리하던 표를 웹앱으로 만들어 주는 도구. 내 데이터로 만들려면 Google 연결이 필요해요.</td>
+              <td><a href="https://spreadsheettoapp.ai/spreadsheet-to-inventory-app" target="_blank">샘플 재고 앱</a></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td class="repo"><a href="https://news.ycombinator.com/item?id=50537152" target="_blank">Rally</a></td>
+              <td class="num">4</td><td class="num">—</td>
+              <td><span class="tag auto">업무자동화</span></td>
+              <td class="desc">메일이나 업무 도구에 새 정보가 들어올 때 AI가 팀의 대시보드나 작은 업무 앱을 갱신하는 도구.</td>
+              <td><a href="https://connected-tidy-crystalline-haldane-g.rallyusercontent.com/" target="_blank">공개 오디오 브리핑 예시</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">2026-11-18 낮 12시대 KST Show HN 첫 페이지에서 독자 주제에 맞는 항목을 선별했습니다. 순위·포인트·댓글은 목록에 표시된 값이고, —는 댓글 수 미표시입니다.</p>
+    </section>
+  </div>
+
+  <div class="tab-panel" id="tab-reddit">
+    <section>
+      <h2>Reddit에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>커뮤니티</th><th>프로젝트</th><th>독자</th><th>콘텐츠 각도</th><th>데모·코드</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>r/SideProject</td>
+              <td class="repo"><a href="https://www.reddit.com/r/SideProject/comments/1xujcv6/saw_an_ad_for_an_expensive_teleprompter_that_just/" target="_blank">NotchPrompter</a></td>
+              <td><div class="tagstack"><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div></td>
+              <td class="desc">목소리를 따라 대본을 넘기는 맥 앱. 말을 멈추거나 대사를 건너뛰는 상황을 직접 시험하고 AI에 고쳐 달라고 전달한 과정이 제작기 소재예요.</td>
+              <td><a href="https://github.com/magnram/notchprompter" target="_blank">공개 코드</a></td>
+            </tr>
+            <tr>
+              <td>r/SideProject</td>
+              <td class="repo"><a href="https://www.reddit.com/r/SideProject/comments/1xtkxnu/i_built_a_tool_that_turns_a_google_maps_listing/" target="_blank">구글 지도에서 매장 홈페이지 만들기</a></td>
+              <td><div class="tagstack"><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></div></td>
+              <td class="desc">업체명과 도시를 입력하면 매장 소개 사이트의 초안을 만들어요. 기존 매장 정보로 어디까지 만들고, 사진은 점주가 어떻게 골라야 할지 시연과 함께 보여줄 수 있어요.</td>
+              <td><a href="https://www.reddit.com/r/SideProject/comments/1xtkxnu/i_built_a_tool_that_turns_a_google_maps_listing/" target="_blank">원문 시연</a> · <a href="https://bbhightech.com/" target="_blank">공식 사이트</a></td>
+            </tr>
+            <tr>
+              <td>r/vibecoding</td>
+              <td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1xudinu/comment/19sj3g3nqs9b9/" target="_blank">Stackboard</a></td>
+              <td><span class="tag vibe">바이브코딩</span></td>
+              <td class="desc">기존 크롬 북마크를 새 탭에 보드처럼 펼쳐주는 확장 프로그램. Claude Code로 만들면서 크롬의 기존 저장·동기화 기능을 그대로 쓴 설계가 초보 제작자에게 참고가 돼요.</td>
+              <td><a href="https://getstackboard.com/" target="_blank">공식 소개</a></td>
+            </tr>
+            <tr>
+              <td>r/vibecoding</td>
+              <td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1xudinu/comment/19sj0ek7ab1ut/" target="_blank">BreadPilot</a></td>
+              <td><span class="tag vibe">바이브코딩</span></td>
+              <td class="desc">전자 부품을 어디에 꽂을지 3D 그림으로 안내하는 앱. 전자회로 초보였던 제작자가 AI의 표 설명을 따라가기 어려워 직접 만든 과정을 다룰 수 있어요.</td>
+              <td><a href="https://youtu.be/P4tDY0AZgy4" target="_blank">시연 영상</a> · <a href="https://github.com/Prestical/BreadPilot" target="_blank">공개 코드</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">2026-11-18 한국시간 기준 두 커뮤니티의 주간 인기 글과 r/vibecoding 주간 쇼케이스에서 선별했습니다. 설명은 제작자가 공개한 글과 자료를 바탕으로 정리했습니다.</p>
+    </section>
+  </div>
+
+  <footer>
+    데이터 출처: <a href="https://github.com/trending" target="_blank" style="color:inherit;">github.com/trending</a> (일간, 2026-11-18 09:00 KST 수집) · <a href="https://www.producthunt.com" target="_blank" style="color:inherit;">producthunt.com</a> (Top Products Launching Today, 2026-11-18 09:40 KST 수집) · <a href="https://news.ycombinator.com/show" target="_blank" style="color:inherit;">Show HN</a> (2026-11-18 낮 12시대 KST 확인) · Reddit <a href="https://www.reddit.com/r/SideProject/top/?t=week" target="_blank" style="color:inherit;">r/SideProject</a>·<a href="https://www.reddit.com/r/vibecoding/comments/1xudinu/rvibecoding_weekly_showcase_thursday_november_12/" target="_blank" style="color:inherit;">r/vibecoding</a> (2026-11-18 확인)
+  </footer>
+
+</div>
+<script>
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
