@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>트렌드 리포트 · 2026-11-20 · 천무스튜디오</title>
+<style>
+  /* 고정 디자인 시스템 — 천무 CDS(github.com/chunmoo/cds) 토큰 기반, 대시보드형(시안 3) 채택.
+     날짜 바뀌어도 이 블록은 건드리지 않는다. */
+  :root{
+    color-scheme: light;
+    --primary:#3E63DD; --on-primary:#FFFFFF;
+    --secondary:#ECEEF5; --on-secondary:#171719;
+    --neutral:#F4F4F5; --surface:#FFFFFF; --surface-raised:#FFFFFF; --surface-muted:#F7F7F8;
+    --on-surface:#171719; --on-surface-variant:#55555B;
+    --outline:#8A8A93; --outline-variant:#E5E5E8;
+    --success:#067647; --success-container:#EAF8F0;
+    --warning:#A15C00; --warning-container:#FFF5E4;
+    --info:#245BC7; --info-container:#ECF1FF;
+    --error:#B42318; --error-container:#FFEDEB;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --primary:#7CA0FF; --on-primary:#0E1836;
+      --secondary:#2A3350; --on-secondary:#F4F4F5;
+      --neutral:#0B0B0D; --surface:#1D1D22; --surface-raised:#26262C; --surface-muted:#27272D;
+      --on-surface:#F4F4F5; --on-surface-variant:#B5B5BB;
+      --outline:#85858E; --outline-variant:#43434B;
+      --success:#6DDB9E; --success-container:#0D3C22;
+      --warning:#FFC36D; --warning-container:#412708;
+      --info:#8DB2FF; --info-container:#0C2355;
+      --error:#FF8A80; --error-container:#441310;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--neutral); color:var(--on-surface);
+    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;
+    font-size:14px; line-height:1.5;}
+  a{color:var(--info); text-underline-offset:2px;}
+  .wrap{max-width:1040px; margin:0 auto; padding:24px 20px 56px;}
+
+  header.top{margin-bottom:18px;}
+  header.top .eyebrow{color:var(--on-surface-variant); font-size:12px; margin-bottom:4px;}
+  header.top h1{font-size:22px; font-weight:600; letter-spacing:-0.3px; margin:0 0 4px;}
+  header.top p{color:var(--on-surface-variant); font-size:12.5px; margin:0;}
+
+  /* KPI 요약 바 — 전체 레포/제품 수, 연속 트렌딩 수, 독자 적합 비중 등 그날 계산한 값만 */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 20px;}
+  .kpi{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:10px; padding:12px 14px;}
+  .kpi .label{font-size:11.5px; color:var(--on-surface-variant); margin-bottom:6px;}
+  .kpi .value{font-size:22px; font-weight:700; letter-spacing:-0.3px; font-variant-numeric:tabular-nums;}
+  .kpi .value small{font-size:12px; font-weight:500; color:var(--on-surface-variant);}
+  .kpi.info .value{color:var(--info);}
+  .kpi.success .value{color:var(--success);}
+  .kpi.warning .value{color:var(--warning);}
+
+  .tabs{display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; border-bottom:1px solid var(--outline-variant);}
+  .tab-btn{appearance:none; background:none; border:none; cursor:pointer; font-family:inherit;
+    font-size:13px; font-weight:600; color:var(--on-surface-variant); padding:8px 4px; margin-right:16px; border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--on-surface); border-bottom-color:var(--primary);}
+  .tab-panel{display:none;} .tab-panel.active{display:block;}
+
+  section{margin-top:22px;}
+  h2{font-size:14px; font-weight:600; margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid var(--outline-variant);}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px;}
+  .card{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:8px; padding:11px 13px; display:flex; flex-direction:column; gap:5px;}
+  .card .rank{font-size:11px; color:var(--on-surface-variant); font-variant-numeric:tabular-nums;}
+  .card h3{font-size:13.5px; font-weight:600; margin:0;}
+  .card h3 a{color:var(--on-surface); text-decoration:none;}
+  .card h3 a:hover{text-decoration:underline;}
+  .card p{font-size:12px; color:var(--on-surface-variant); margin:0;}
+  .card .why{font-size:11.5px; color:var(--on-surface-variant); font-style:italic;}
+  .card .posttitle{font-size:12px; font-weight:700; color:var(--on-surface); margin-top:2px;}
+  .tags{display:flex; gap:4px; flex-wrap:wrap;}
+  .tag{font-size:10.5px; font-weight:500; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center;}
+  .tag.vibe{background:var(--info-container); color:var(--info);}
+  .tag.auto{background:var(--success-container); color:var(--success);}
+  .tag.ref{background:var(--secondary); color:var(--on-secondary);}
+  /* 출처 태그 */
+  .tag.src-gh{background:var(--surface-muted); color:var(--on-surface-variant); border:1px solid var(--outline-variant);}
+  .tag.src-ph{background:var(--warning-container); color:var(--warning);}
+  .tag.src-hn{background:var(--secondary); color:var(--on-secondary); border:1px solid var(--outline);}
+  .tag.src-reddit{background:var(--error-container); color:var(--error);}
+  .tagstack{display:flex; gap:4px; flex-wrap:wrap;}
+  /* 연속 트렌딩 배지: 2일 이상이면 success색, 첫 등장이면 "신규"(무채색) */
+  .streak-badge{font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-block; background:var(--success-container); color:var(--success);}
+  .streak-badge.new{background:var(--surface-muted); color:var(--on-surface-variant); font-weight:500;}
+  .fit{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;}
+  .fit .dot{width:7px; height:7px; border-radius:50%; display:inline-block;}
+  .fit.high .dot{background:var(--success);}
+  .fit.mid .dot{background:var(--warning);}
+  .fit.low .dot{background:var(--error);}
+
+  /* 오늘 스타 증가 바 차트 */
+  .barlist{display:flex; flex-direction:column; gap:8px;}
+  .barrow{display:grid; grid-template-columns:150px 1fr 56px; gap:10px; align-items:center; font-size:12.5px;}
+  .barrow .name{color:var(--on-surface-variant); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .bartrack{background:var(--surface-muted); border-radius:4px; height:14px; position:relative;}
+  .barfill{background:var(--primary); height:100%; border-radius:4px; min-width:4px;}
+  .barrow .val{font-variant-numeric:tabular-nums; color:var(--on-surface); font-weight:600;}
+  .barnote{font-size:11.5px; color:var(--on-surface-variant); margin-top:10px;}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{text-align:left; font-size:11px; font-weight:600; color:var(--on-surface-variant); padding:7px 9px; border-bottom:1px solid var(--outline-variant); white-space:nowrap;}
+  tbody td{padding:7px 9px; border-bottom:1px solid var(--outline-variant); vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-muted);}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  td.repo a{color:var(--on-surface); font-weight:600; text-decoration:none;}
+  td.repo a:hover{text-decoration:underline;}
+  td.desc{color:var(--on-surface-variant); max-width:280px;}
+  .tablewrap{overflow-x:auto; border:1px solid var(--outline-variant); border-radius:8px;}
+  .tablewrap table{border:none;}
+  .note{font-size:11px; color:var(--on-surface-variant); margin-top:8px;}
+
+  footer{margin-top:32px; font-size:11px; color:var(--on-surface-variant); border-top:1px solid var(--outline-variant); padding-top:12px;}
+
+  .site-nav{display:flex; align-items:center; flex-wrap:wrap; gap:6px 16px; margin:0 0 20px; font-size:13px;}
+  .site-nav a{color:var(--on-surface); text-underline-offset:3px;}
+  .site-nav a[aria-current]{font-weight:700;}
+  .site-nav a:focus-visible,.site-list a:focus-visible{outline:2px solid var(--primary); outline-offset:4px;}
+  @media (max-width:620px){
+    .wrap{padding:18px 14px 40px;}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));}
+    .tab-btn{margin-right:5px;}
+    .barrow{grid-template-columns:minmax(0,1fr) minmax(50px,1fr) 48px; gap:5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap cds">
+  <nav class="site-nav" aria-label="리포트 탐색"><a href="../">최신 리포트</a><a href="../archive/">지난 리포트</a></nav>
+
+  <header class="top">
+    <div class="eyebrow">천무스튜디오 · 트렌드 리포트</div>
+    <h1>2026년 11월 20일 (금요일)</h1>
+    <p>비전공자 대상 콘텐츠 소재 · 바이브코딩(AI에게 말로 시켜 서비스 만들기)과 업무자동화(반복 업무 자동화) · 매일 오전 9시 한국시간 수집 시작 · 주간(weekly) 트렌딩은 월요일에만 수집</p>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi info"><div class="label">오늘 GitHub 레포</div><div class="value">16<small> 개</small></div></div>
+    <div class="kpi info"><div class="label">Product Hunt 신제품</div><div class="value">10<small> 개</small></div></div>
+    <div class="kpi success"><div class="label">연속 트렌딩(2일+)</div><div class="value">6<small> 개</small></div></div>
+    <div class="kpi warning"><div class="label">GitHub·PH 독자 적합 비중</div><div class="value">35<small>%</small></div></div>
+  </div>
+
+  <section>
+    <h2>오늘의 추천 콘텐츠 소재</h2>
+    <div class="cards">
+
+      <div class="card">
+        <div class="rank">#1</div>
+        <h3><a href="https://shipjury.com/check" target="_blank">ShipJury</a></h3>
+        <div class="tags"><span class="tag src-reddit">Reddit</span><span class="tag auto">업무자동화</span><span class="tag vibe">바이브코딩</span></div>
+        <p>링크 하나만 넣으면 가입 없이 내 사이트가 잘 돌아가는지 5분마다 자동으로 확인해주고, 문제가 생기면(그리고 복구되면) 이메일로 알려주는 무료 점검 서비스.</p>
+        <p class="why">바이브코딩으로 서비스를 만든 뒤 '운영'까지 자동화하고 싶은 사람에게 바로 보여주기 좋은 사례 — 체험: shipjury.com/check</p>
+        <p class="posttitle">바이브코딩으로 앱 만들고 나서, 운영은 누가 봐주나요? (ShipJury 체험기)</p>
+      </div>
+
+      <div class="card">
+        <div class="rank">#2</div>
+        <h3><a href="https://github.com/zhouxiaoka/autoclip" target="_blank">AutoClip</a></h3>
+        <div class="tags"><span class="tag src-gh">GitHub</span><span class="tag auto">업무자동화</span></div>
+        <p>링크 하나만 넣으면 긴 영상(팟캐스트·강의 등)을 AI가 자동으로 짧은 클립으로 잘라주고 자막·표지·홍보문구까지 만들어주는 오픈소스 데스크톱 앱. 한국어 화면을 지원한다.</p>
+        <p class="why">콘텐츠 제작 반복 업무를 통째로 줄여주는 사례이자 한국어 지원까지 되는 드문 오픈소스 — github.com/zhouxiaoka/autoclip</p>
+        <p class="posttitle">영상 하나 올리면 끝 — 숏폼 자동 제작 오픈소스 써보니</p>
+      </div>
+
+      <div class="card">
+        <div class="rank">#3</div>
+        <h3><a href="https://www.producthunt.com/products/stripo-email" target="_blank">Stripo Email Widgets</a></h3>
+        <div class="tags"><span class="tag src-ph">Product Hunt</span><span class="tag auto">업무자동화</span></div>
+        <p>코딩 없이 이메일 안에 게임·퀴즈·설문 같은 참여형 요소를 바로 넣을 수 있는 도구.</p>
+        <p class="why">마케팅 이메일을 직접 보내는 비개발자가 바로 써볼 수 있는 완성 서비스 — producthunt.com/products/stripo-email</p>
+        <p class="posttitle">이메일에 퀴즈 하나 넣었더니 클릭률이 달라졌다</p>
+      </div>
+
+      <div class="card">
+        <div class="rank">#4</div>
+        <h3><a href="https://github.com/leetheguy/purple_flow" target="_blank">Purple Flow</a></h3>
+        <div class="tags"><span class="tag src-hn">Show HN</span><span class="tag auto">업무자동화</span></div>
+        <p>메모리 512MB짜리 저렴한 서버에서도 1만 개 넘는 자동화 워크플로를 돌릴 수 있는, AI 중심으로 다시 만든 n8n(업무자동화 도구) 대체재. 오픈소스로 공개됐다.</p>
+        <p class="why">반복 업무 자동화 도구를 저렴하게 직접 운영해보고 싶은 사람에게 소개할 소재 — github.com/leetheguy/purple_flow</p>
+        <p class="posttitle">n8n 대신 이걸 써볼까? 가벼운 업무자동화 오픈소스 등장</p>
+      </div>
+
+      <div class="card">
+        <div class="rank">#5</div>
+        <h3><a href="https://github.com/cathrynlavery/diagram-design" target="_blank">diagram-design</a></h3>
+        <div class="tags"><span class="tag src-gh">GitHub</span><span class="tag vibe">바이브코딩</span></div>
+        <p>Claude Code 같은 AI 코딩 에이전트에게 말로 시키면 순서도·조직도 등 45가지 다이어그램을 자동으로 그려주는 에이전트 스킬.</p>
+        <p class="why">'말로 그림까지 그리기'라는 바이브코딩 체감 사례로 소개하기 좋음 — 데모: cathrynlavery.github.io/diagram-design</p>
+        <p class="posttitle">말로 설명만 했는데 다이어그램이 그려진다고?</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="github">GitHub Trending</button>
+    <button class="tab-btn" data-tab="ph">Product Hunt</button>
+    <button class="tab-btn" data-tab="hn">Show HN</button>
+    <button class="tab-btn" data-tab="reddit">Reddit</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-github">
+
+    <section>
+      <h2>오늘 스타 많이 늘어난 순 (전체 16개)</h2>
+      <div class="barlist">
+        <div class="barrow"><div class="name">obra/superpowers</div><div class="bartrack"><div class="barfill" style="width:100%"></div></div><div class="val">+2,028</div></div>
+        <div class="barrow"><div class="name">Claude-BugHunter</div><div class="bartrack"><div class="barfill" style="width:67%"></div></div><div class="val">+1,349</div></div>
+        <div class="barrow"><div class="name">last30days-skill</div><div class="bartrack"><div class="barfill" style="width:47%"></div></div><div class="val">+954</div></div>
+        <div class="barrow"><div class="name">HKUDS/CLI-Anything</div><div class="bartrack"><div class="barfill" style="width:44%"></div></div><div class="val">+898</div></div>
+        <div class="barrow"><div class="name">firecrawl</div><div class="bartrack"><div class="barfill" style="width:41%"></div></div><div class="val">+825</div></div>
+        <div class="barrow"><div class="name">cursor/plugins</div><div class="bartrack"><div class="barfill" style="width:19%"></div></div><div class="val">+384</div></div>
+        <div class="barrow"><div class="name">app-store-compliance</div><div class="bartrack"><div class="barfill" style="width:19%"></div></div><div class="val">+377</div></div>
+        <div class="barrow"><div class="name">Ghost-Downloader-3</div><div class="bartrack"><div class="barfill" style="width:17%"></div></div><div class="val">+341</div></div>
+        <div class="barrow"><div class="name">stitch-skills</div><div class="bartrack"><div class="barfill" style="width:15%"></div></div><div class="val">+302</div></div>
+        <div class="barrow"><div class="name">diagram-design</div><div class="bartrack"><div class="barfill" style="width:13%"></div></div><div class="val">+271</div></div>
+        <div class="barrow"><div class="name">openvino</div><div class="bartrack"><div class="barfill" style="width:12%"></div></div><div class="val">+246</div></div>
+        <div class="barrow"><div class="name">minimind</div><div class="bartrack"><div class="barfill" style="width:12%"></div></div><div class="val">+238</div></div>
+        <div class="barrow"><div class="name">AFFiNE</div><div class="bartrack"><div class="barfill" style="width:9%"></div></div><div class="val">+182</div></div>
+        <div class="barrow"><div class="name">autoclip</div><div class="bartrack"><div class="barfill" style="width:6%"></div></div><div class="val">+126</div></div>
+        <div class="barrow"><div class="name">nginx/nginx</div><div class="bartrack"><div class="barfill" style="width:4%"></div></div><div class="val">+73</div></div>
+        <div class="barrow"><div class="name">opensre</div><div class="bartrack"><div class="barfill" style="width:2%"></div></div><div class="val">+38</div></div>
+      </div>
+      <p class="barnote">GitHub Trending 페이지에 표시된 오늘의 스타 증가 수 · 2026-11-20 09:07~09:40 KST 수집, 트렌딩 페이지 표시값 기준</p>
+    </section>
+
+    <section>
+      <h2>전체 목록</h2>
+      <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>레포</th><th class="num">오늘★</th><th class="num">전체★</th><th>연속</th><th>독자</th><th>활용도</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td class="repo"><a href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank">Claude-BugHunter</a></td><td class="num">1,349</td><td class="num">12,490</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">Claude Code용 보안 취약점 탐지·레드팀 스킬 모음</td></tr>
+          <tr><td>2</td><td class="repo"><a href="https://github.com/obra/superpowers" target="_blank">obra/superpowers</a></td><td class="num">2,028</td><td class="num">322,059</td><td><span class="streak-badge">3일째</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">AI 코딩 에이전트를 위한 완성형 개발 방법론·스킬 묶음</td></tr>
+          <tr><td>3</td><td class="repo"><a href="https://github.com/HKUDS/CLI-Anything" target="_blank">HKUDS/CLI-Anything</a></td><td class="num">898</td><td class="num">60,534</td><td><span class="streak-badge">2일째</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">터미널 프로그램을 AI 에이전트가 호출해 쓰게 바꿔주는 도구</td></tr>
+          <tr><td>4</td><td class="repo"><a href="https://github.com/jingyaogong/minimind" target="_blank">jingyaogong/minimind</a></td><td class="num">238</td><td class="num">66,840</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">2시간 안에 6,400만 파라미터 AI 모델을 직접 학습시켜보는 교육용 프로젝트</td></tr>
+          <tr><td>5</td><td class="repo"><a href="https://github.com/cursor/plugins" target="_blank">cursor/plugins</a></td><td class="num">384</td><td class="num">17,549</td><td><span class="streak-badge">3일째</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">AI 코딩 도구 Cursor의 공식 플러그인 모음</td></tr>
+          <tr><td>6</td><td class="repo"><a href="https://github.com/firecrawl/firecrawl" target="_blank">firecrawl/firecrawl</a></td><td class="num">825</td><td class="num">204,181</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">AI 에이전트가 웹을 검색·수집하게 해주는 API 서비스</td></tr>
+          <tr><td>7</td><td class="repo"><a href="https://github.com/nginx/nginx" target="_blank">nginx/nginx</a></td><td class="num">73</td><td class="num">32,323</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">전세계가 널리 쓰는 고성능 웹서버 소프트웨어</td></tr>
+          <tr><td>8</td><td class="repo"><a href="https://github.com/openvinotoolkit/openvino" target="_blank">openvinotoolkit/openvino</a></td><td class="num">246</td><td class="num">11,554</td><td><span class="streak-badge">2일째</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">AI 모델을 더 빠르게 돌아가도록 최적화·배포하는 툴킷</td></tr>
+          <tr><td>9</td><td class="repo"><a href="https://github.com/cathrynlavery/diagram-design" target="_blank">cathrynlavery/diagram-design</a></td><td class="num">271</td><td class="num">68,619</td><td><span class="streak-badge new">신규</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit mid"><span class="dot"></span>중</span></td><td class="desc">AI 코딩 에이전트에게 말로 시켜 45가지 다이어그램을 그리는 스킬</td></tr>
+          <tr><td>10</td><td class="repo"><a href="https://github.com/mvanhorn/last30days-skill" target="_blank">mvanhorn/last30days-skill</a></td><td class="num">954</td><td class="num">70,779</td><td><span class="streak-badge">4일째</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit high"><span class="dot"></span>상</span></td><td class="desc">레딧·X·유튜브 등을 AI가 돌며 화제글을 모아 요약하는 연구 비서 스킬</td></tr>
+          <tr><td>11</td><td class="repo"><a href="https://github.com/google-labs-code/stitch-skills" target="_blank">google-labs-code/stitch-skills</a></td><td class="num">302</td><td class="num">10,712</td><td><span class="streak-badge">5일째</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">구글 디자인 도구 Stitch를 AI 코딩 도구에서 말로 다루게 하는 스킬 모음</td></tr>
+          <tr><td>12</td><td class="repo"><a href="https://github.com/mjmirza/app-store-compliance" target="_blank">mjmirza/app-store-compliance</a></td><td class="num">377</td><td class="num">1,820</td><td><span class="streak-badge new">신규</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit mid"><span class="dot"></span>중</span></td><td class="desc">앱스토어·구글플레이 반려를 피하는 117가지 체크리스트</td></tr>
+          <tr><td>13</td><td class="repo"><a href="https://github.com/Tracer-Cloud/opensre" target="_blank">Tracer-Cloud/opensre</a></td><td class="num">38</td><td class="num">13,113</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low"><span class="dot"></span>하</span></td><td class="desc">CI/CD 안정성을 감시하는 오픈소스 AI 에이전트</td></tr>
+          <tr><td>14</td><td class="repo"><a href="https://github.com/toeverything/AFFiNE" target="_blank">toeverything/AFFiNE</a></td><td class="num">182</td><td class="num">75,151</td><td><span class="streak-badge new">신규</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit mid"><span class="dot"></span>중</span></td><td class="desc">노션·미로를 합친 듯한 올인원 메모·기획·화이트보드 오픈소스 앱</td></tr>
+          <tr><td>15</td><td class="repo"><a href="https://github.com/XiaoYouChR/Ghost-Downloader-3" target="_blank">XiaoYouChR/Ghost-Downloader-3</a></td><td class="num">341</td><td class="num">12,682</td><td><span class="streak-badge new">신규</span></td><td><span class="tag ref">참고</span></td><td><span class="fit mid"><span class="dot"></span>중</span></td><td class="desc">여러 파일을 빠르게 내려받는 범용 다운로드 관리 프로그램</td></tr>
+          <tr><td>16</td><td class="repo"><a href="https://github.com/zhouxiaoka/autoclip" target="_blank">zhouxiaoka/autoclip</a></td><td class="num">126</td><td class="num">11,196</td><td><span class="streak-badge new">신규</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit mid"><span class="dot"></span>중</span></td><td class="desc">링크 하나로 긴 영상을 숏폼으로 자동 편집해주는 한국어 지원 오픈소스 앱</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-ph">
+
+    <section>
+      <h2>오늘의 프로덕트헌트 신제품 (Top 10)</h2>
+      <p class="note">GitHub은 오픈소스 코드·라이브러리 중심이라 개발자 느낌이 강한 반면, Product Hunt는 바로 써볼 수 있는 완성된 서비스·앱이 많아 비전공자 콘텐츠에 보완적입니다.</p>
+      <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>제품</th><th>카테고리</th><th class="num">오늘 추천수</th><th class="num">댓글</th><th>독자</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td class="repo"><a href="https://www.producthunt.com/products/testsprite" target="_blank">TestSprite 4.0</a></td><td>Software Engineering · Developer Tools · AI</td><td class="num">280</td><td class="num">37</td><td><span class="tag ref">참고</span></td><td class="desc">코드를 한 곳 고치면 다른 곳이 깨지는지 AI가 자동으로 검사해주는 테스트 에이전트</td></tr>
+          <tr><td>2</td><td class="repo"><a href="https://www.producthunt.com/products/verse-engine-by-ctruh" target="_blank">Verse Engine by Ctruh</a></td><td>Developer Tools · AR · 3D Modeling</td><td class="num">249</td><td class="num">56</td><td><span class="tag ref">참고</span></td><td class="desc">블렌더·유니티·언리얼 3D 장면을 클릭 한 번으로 실시간 3D 링크로 공유</td></tr>
+          <tr><td>3</td><td class="repo"><a href="https://www.producthunt.com/products/netlify" target="_blank">Netlify Server</a></td><td>SaaS · Developer Tools · AI</td><td class="num">234</td><td class="num">19</td><td><span class="tag ref">참고</span></td><td class="desc">실시간 채팅·멀티플레이어·오래 돌아가는 AI 에이전트까지 돌리는 서버 호스팅</td></tr>
+          <tr><td>4</td><td class="repo"><a href="https://www.producthunt.com/products/stripo-email" target="_blank">Stripo Email Widgets</a></td><td>Design Tools · Email Marketing · AI</td><td class="num">220</td><td class="num">135</td><td><span class="tag auto">업무자동화</span></td><td class="desc">코딩 없이 이메일에 게임·퀴즈·설문 같은 참여형 요소를 바로 삽입</td></tr>
+          <tr><td>5</td><td class="repo"><a href="https://www.producthunt.com/products/adside" target="_blank">Adside</a></td><td>Marketing · Advertising · AI</td><td class="num">200</td><td class="num">48</td><td><span class="tag auto">업무자동화</span></td><td class="desc">여러 전문 AI 에이전트 팀이 유료 광고 운영을 대신 맡아주는 서비스</td></tr>
+          <tr><td>6</td><td class="repo"><a href="https://www.producthunt.com/products/spellar" target="_blank">Spellar for Chrome</a></td><td>Chrome Extensions · Notes · Meetings</td><td class="num">183</td><td class="num">41</td><td><span class="tag auto">업무자동화</span></td><td class="desc">봇 초대 없이 브라우저에서 바로 쓰는 무료 회의록 자동 작성(기억 기능 포함)</td></tr>
+          <tr><td>7</td><td class="repo"><a href="https://www.producthunt.com/products/manufact" target="_blank">Manufact</a></td><td>Developer Tools · AI</td><td class="num">178</td><td class="num">52</td><td><span class="tag ref">참고</span></td><td class="desc">만든 MCP를 여러 플러그인 장터에 한 번에 배포·테스트</td></tr>
+          <tr><td>8</td><td class="repo"><a href="https://www.producthunt.com/products/tabstack" target="_blank">Tabstack by Mozilla</a></td><td>API · Developer Tools · AI</td><td class="num">178</td><td class="num">17</td><td><span class="tag ref">참고</span></td><td class="desc">내 데이터를 넘기지 않고도 AI 모델이 웹 정보를 가져다 쓰게 해주는 API</td></tr>
+          <tr><td>9</td><td class="repo"><a href="https://www.producthunt.com/products/teaflask" target="_blank">Teaflask</a></td><td>SaaS · Developer Tools · AI</td><td class="num">154</td><td class="num">13</td><td><span class="tag ref">참고</span></td><td class="desc">백엔드를 건드리지 않고도 앱에 스스로 발전하는 AI 코파일럿을 붙이는 서비스</td></tr>
+          <tr><td>10</td><td class="repo"><a href="https://www.producthunt.com/products/gemini-6" target="_blank">Gemini 4 Neon</a></td><td>Productivity · AI</td><td class="num">137</td><td class="num">2</td><td><span class="tag ref">참고</span></td><td class="desc">더 빠르게 복잡한 작업을 끝내는 구글의 신규 AI 모델</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="barnote">Product Hunt에 표시된 추천수와 댓글 수 · 데일리 리더보드(전날 하루 마감분) 기준, 2026-11-20 10:05 KST 수집</p>
+    </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-hn">
+    <section>
+      <h2>Show HN에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>원문 순위</th><th>프로젝트</th><th class="num">포인트</th><th class="num">댓글</th><th>독자</th><th>설명</th><th>체험</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>24</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50560170" target="_blank">Purple Flow</a></td><td class="num">5</td><td class="num">2</td><td><span class="tag auto">업무자동화</span></td><td class="desc">512MB 서버에서도 1만 개 넘는 워크플로를 돌리는 AI 중심 n8n 대체재(오픈소스)</td><td><a href="https://github.com/leetheguy/purple_flow" target="_blank">GitHub 코드</a></td></tr>
+            <tr><td>3</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50567819" target="_blank">Tools4U</a></td><td class="num">2</td><td class="num">—</td><td><span class="tag auto">업무자동화</span></td><td class="desc">설치 없이 브라우저에서 바로 쓰는 54개 파일 변환·편집 도구 모음</td><td><a href="https://tools4u.org/" target="_blank">바로 써보기</a></td></tr>
+            <tr><td>3</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50567911" target="_blank">Mindie</a></td><td class="num">1</td><td class="num">—</td><td><span class="tag auto">업무자동화</span></td><td class="desc">앱 설치 없이 왓츠앱 안에서 메모·일정·리마인더를 챗봇처럼 관리</td><td><a href="https://www.getmindie.app/" target="_blank">서비스 보기</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">Show HN daily/new 목록에서 비개발자 업무자동화에 맞는 3건 선정 · 2026-11-20 10:30 KST 수집</p>
+    </section>
+  </div>
+
+  <div class="tab-panel" id="tab-reddit">
+    <section>
+      <h2>Reddit에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>커뮤니티</th><th>프로젝트</th><th>독자</th><th>콘텐츠 각도</th><th>데모·코드</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>r/vibecoding</td><td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1y0a2dg/rvibecoding_weekly_showcase_thursday_november_19/" target="_blank">ShipJury</a></td><td><span class="tagstack"><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></span></td><td class="desc">Claude Code로 만든 사이트 자동 모니터링 도구. 5분마다 가동 확인, 매일 브라우저로 화면까지 점검해 문제 발생·복구를 이메일로 알림</td><td><a href="https://shipjury.com/check" target="_blank">무료 체크</a></td></tr>
+            <tr><td>r/vibecoding</td><td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1y0a2dg/rvibecoding_weekly_showcase_thursday_november_19/" target="_blank">Stackboard</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">새 탭을 북마크 보드로 바꿔주는 크롬 확장. 서버 없이 북마크 API로 동기화, 빌드마다 자동테스트+실제 설치 테스트를 거치는 과정이 소재</td><td><a href="https://chromewebstore.google.com/detail/bgcedhchngcopaefchpkbhioagknnpma" target="_blank">크롬 웹스토어</a></td></tr>
+            <tr><td>r/vibecoding</td><td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1y0a2dg/rvibecoding_weekly_showcase_thursday_november_19/" target="_blank">Zinc</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">Claude Code만으로 20년 된 논문관리 프로그램 Zotero를 대체하는 네이티브 앱을 새로 제작, 수십 배 빨라진 비교표 공개</td><td><a href="https://aborakati.github.io/zinc/" target="_blank">브라우저 체험판</a> · <a href="https://github.com/ABorakati/zinc" target="_blank">코드</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">r/vibecoding 주간 쇼케이스(11/19 게시) 댓글 중 3건 선정 · 2026-11-20 11:10 KST 수집</p>
+    </section>
+  </div>
+
+  <footer>
+    데이터 출처: <a href="https://github.com/trending" target="_blank" style="color:inherit;">github.com/trending</a> · <a href="https://www.producthunt.com" target="_blank" style="color:inherit;">producthunt.com</a> · <a href="https://news.ycombinator.com/show" target="_blank" style="color:inherit;">Show HN</a> · Reddit <a href="https://www.reddit.com/r/SideProject/top/?t=week" target="_blank" style="color:inherit;">r/SideProject</a>·<a href="https://www.reddit.com/r/vibecoding/" target="_blank" style="color:inherit;">r/vibecoding</a>
+  </footer>
+
+</div>
+<script>
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
