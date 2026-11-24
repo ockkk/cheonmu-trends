@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>트렌드 리포트 · 2026-11-24 · 천무스튜디오</title>
+<style>
+  /* 고정 디자인 시스템 — 천무 CDS(github.com/chunmoo/cds) 토큰 기반, 대시보드형(시안 3) 채택.
+     날짜 바뀌어도 이 블록은 건드리지 않는다. */
+  :root{
+    color-scheme: light;
+    --primary:#3E63DD; --on-primary:#FFFFFF;
+    --secondary:#ECEEF5; --on-secondary:#171719;
+    --neutral:#F4F4F5; --surface:#FFFFFF; --surface-raised:#FFFFFF; --surface-muted:#F7F7F8;
+    --on-surface:#171719; --on-surface-variant:#55555B;
+    --outline:#8A8A93; --outline-variant:#E5E5E8;
+    --success:#067647; --success-container:#EAF8F0;
+    --warning:#A15C00; --warning-container:#FFF5E4;
+    --info:#245BC7; --info-container:#ECF1FF;
+    --error:#B42318; --error-container:#FFEDEB;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --primary:#7CA0FF; --on-primary:#0E1836;
+      --secondary:#2A3350; --on-secondary:#F4F4F5;
+      --neutral:#0B0B0D; --surface:#1D1D22; --surface-raised:#26262C; --surface-muted:#27272D;
+      --on-surface:#F4F4F5; --on-surface-variant:#B5B5BB;
+      --outline:#85858E; --outline-variant:#43434B;
+      --success:#6DDB9E; --success-container:#0D3C22;
+      --warning:#FFC36D; --warning-container:#412708;
+      --info:#8DB2FF; --info-container:#0C2355;
+      --error:#FF8A80; --error-container:#441310;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--neutral); color:var(--on-surface);
+    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;
+    font-size:14px; line-height:1.5;}
+  a{color:var(--info); text-underline-offset:2px;}
+  .wrap{max-width:1040px; margin:0 auto; padding:24px 20px 56px;}
+
+  header.top{margin-bottom:18px;}
+  header.top .eyebrow{color:var(--on-surface-variant); font-size:12px; margin-bottom:4px;}
+  header.top h1{font-size:22px; font-weight:600; letter-spacing:-0.3px; margin:0 0 4px;}
+  header.top p{color:var(--on-surface-variant); font-size:12.5px; margin:0;}
+
+  /* KPI 요약 바 — 전체 레포/제품 수, 연속 트렌딩 수, 독자 적합 비중 등 그날 계산한 값만 */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 20px;}
+  .kpi{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:10px; padding:12px 14px;}
+  .kpi .label{font-size:11.5px; color:var(--on-surface-variant); margin-bottom:6px;}
+  .kpi .value{font-size:22px; font-weight:700; letter-spacing:-0.3px; font-variant-numeric:tabular-nums;}
+  .kpi .value small{font-size:12px; font-weight:500; color:var(--on-surface-variant);}
+  .kpi.info .value{color:var(--info);}
+  .kpi.success .value{color:var(--success);}
+  .kpi.warning .value{color:var(--warning);}
+
+  .tabs{display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; border-bottom:1px solid var(--outline-variant);}
+  .tab-btn{appearance:none; background:none; border:none; cursor:pointer; font-family:inherit;
+    font-size:13px; font-weight:600; color:var(--on-surface-variant); padding:8px 4px; margin-right:16px; border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--on-surface); border-bottom-color:var(--primary);}
+  .tab-panel{display:none;} .tab-panel.active{display:block;}
+
+  section{margin-top:22px;}
+  h2{font-size:14px; font-weight:600; margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid var(--outline-variant);}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px;}
+  .card{background:var(--surface-raised); border:1px solid var(--outline-variant); border-radius:8px; padding:11px 13px; display:flex; flex-direction:column; gap:5px;}
+  .card .rank{font-size:11px; color:var(--on-surface-variant); font-variant-numeric:tabular-nums;}
+  .card h3{font-size:13.5px; font-weight:600; margin:0;}
+  .card h3 a{color:var(--on-surface); text-decoration:none;}
+  .card h3 a:hover{text-decoration:underline;}
+  .card p{font-size:12px; color:var(--on-surface-variant); margin:0;}
+  .card .why{font-size:11.5px; color:var(--on-surface-variant); font-style:italic;}
+  .card .posttitle{font-size:12px; font-weight:700; color:var(--on-surface); margin-top:2px;}
+  .tags{display:flex; gap:4px; flex-wrap:wrap;}
+  .tag{font-size:10.5px; font-weight:500; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center;}
+  .tag.vibe{background:var(--info-container); color:var(--info);}
+  .tag.auto{background:var(--success-container); color:var(--success);}
+  .tag.ref{background:var(--secondary); color:var(--on-secondary);}
+  /* 출처 태그 */
+  .tag.src-gh{background:var(--surface-muted); color:var(--on-surface-variant); border:1px solid var(--outline-variant);}
+  .tag.src-ph{background:var(--warning-container); color:var(--warning);}
+  .tag.src-hn{background:var(--secondary); color:var(--on-secondary); border:1px solid var(--outline);}
+  .tag.src-reddit{background:var(--error-container); color:var(--error);}
+  .tagstack{display:flex; gap:4px; flex-wrap:wrap;}
+  /* 연속 트렌딩 배지: 2일 이상이면 success색, 첫 등장이면 "신규"(무채색) */
+  .streak-badge{font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:999px; white-space:nowrap; display:inline-block; background:var(--success-container); color:var(--success);}
+  .streak-badge.new{background:var(--surface-muted); color:var(--on-surface-variant); font-weight:500;}
+  .fit{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;}
+  .fit .dot{width:7px; height:7px; border-radius:50%; display:inline-block;}
+  .fit.high .dot{background:var(--success);}
+  .fit.mid .dot{background:var(--warning);}
+  .fit.low .dot{background:var(--error);}
+
+  /* 오늘 스타 증가 바 차트 */
+  .barlist{display:flex; flex-direction:column; gap:8px;}
+  .barrow{display:grid; grid-template-columns:150px 1fr 56px; gap:10px; align-items:center; font-size:12.5px;}
+  .barrow .name{color:var(--on-surface-variant); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .bartrack{background:var(--surface-muted); border-radius:4px; height:14px; position:relative;}
+  .barfill{background:var(--primary); height:100%; border-radius:4px; min-width:4px;}
+  .barrow .val{font-variant-numeric:tabular-nums; color:var(--on-surface); font-weight:600;}
+  .barnote{font-size:11.5px; color:var(--on-surface-variant); margin-top:10px;}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{text-align:left; font-size:11px; font-weight:600; color:var(--on-surface-variant); padding:7px 9px; border-bottom:1px solid var(--outline-variant); white-space:nowrap;}
+  tbody td{padding:7px 9px; border-bottom:1px solid var(--outline-variant); vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-muted);}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  td.repo a{color:var(--on-surface); font-weight:600; text-decoration:none;}
+  td.repo a:hover{text-decoration:underline;}
+  td.desc{color:var(--on-surface-variant); max-width:280px;}
+  .tablewrap{overflow-x:auto; border:1px solid var(--outline-variant); border-radius:8px;}
+  .tablewrap table{border:none;}
+  .note{font-size:11px; color:var(--on-surface-variant); margin-top:8px;}
+
+  footer{margin-top:32px; font-size:11px; color:var(--on-surface-variant); border-top:1px solid var(--outline-variant); padding-top:12px;}
+
+  .site-nav{display:flex; align-items:center; flex-wrap:wrap; gap:6px 16px; margin:0 0 20px; font-size:13px;}
+  .site-nav a{color:var(--on-surface); text-underline-offset:3px;}
+  .site-nav a[aria-current]{font-weight:700;}
+  .site-nav a:focus-visible,.site-list a:focus-visible{outline:2px solid var(--primary); outline-offset:4px;}
+  @media (max-width:620px){
+    .wrap{padding:18px 14px 40px;}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));}
+    .tab-btn{margin-right:5px;}
+    .barrow{grid-template-columns:minmax(0,1fr) minmax(50px,1fr) 48px; gap:5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap cds">
+  <nav class="site-nav" aria-label="리포트 탐색"><a href="../">최신 리포트</a><a href="../archive/">지난 리포트</a></nav>
+
+  <!-- 헤더: 날짜와 월요일 주간 목록 안내를 채운다. 실제 출처별 확인 시각은 각 표와 각주에 적는다. -->
+  <header class="top">
+    <div class="eyebrow">천무스튜디오 · 트렌드 리포트</div>
+    <h1>2026년 11월 24일 (화)</h1>
+    <p>비전공자 대상 콘텐츠 소재 · 바이브코딩(AI에게 말로 시켜 서비스 만들기)과 업무자동화(반복 업무 자동화) · 매일 오전 9시 한국시간 수집 시작 · 화요일이라 GitHub 일간 목록만 정리했습니다</p>
+  </header>
+
+  <!-- KPI 4개: 오늘 GitHub 레포 수 / Product Hunt 신제품 수 / 연속 트렌딩(2일+) 레포 수 / 바이브코딩·업무자동화 해당 비중(%) -->
+  <!-- 비중 계산법: (GitHub 중 vibe 또는 auto 태그 수 + PH 중 vibe 또는 auto 태그 수) ÷ (GitHub 전체 수 + PH 전체 수) × 100, 소수점 없이 반올림 -->
+  <div class="kpis">
+    <div class="kpi info"><div class="label">오늘 GitHub 레포</div><div class="value">16<small> 개</small></div></div>
+    <div class="kpi info"><div class="label">Product Hunt 신제품</div><div class="value">10<small> 개</small></div></div>
+    <div class="kpi success"><div class="label">연속 트렌딩(2일+)</div><div class="value">16<small> 개</small></div></div>
+    <div class="kpi warning"><div class="label">GitHub·PH 독자 적합 비중</div><div class="value">46<small>%</small></div></div>
+  </div>
+
+  <!-- 상단 추천은 그날 수집한 모든 출처에서 독자 태그와 비전공자 활용도를 기준으로 3~6개 선정. 동일한 도구는 카드 하나에 확인된 출처 태그를 함께 표시. -->
+  <section>
+    <h2>오늘의 추천 콘텐츠 소재</h2>
+    <div class="cards">
+      <!-- .card 블록: rank("#N"), h3(링크), tags(출처 태그 .tag.src-gh/.tag.src-ph/.tag.src-hn/.tag.src-reddit 및 독자 태그), p(설명), p.why(추천 이유·체험 링크), p.posttitle(게시물 제목 아이디어) -->
+<div class="card"><div class="rank">#1</div><h3><a href="https://news.ycombinator.com/item?id=50609708" target="_blank" rel="noopener noreferrer">Hermit CRM</a></h3><div class="tags"><span class="tag src-hn">Show HN</span><span class="tag auto">업무자동화</span></div><p>고객·영업 진행·할 일을 내 노트북의 일반 문서 파일로 관리하는 무료 영업 관리 도구입니다.</p><p class="why">Show HN 순위 목록에 올라 포인트 34입니다. 소규모 사업자·프리랜서의 반복 영업 관리를 줄이는 사례이고, AI에게 말로 내 방식에 맞게 바꾸게 할 수 있다고 소개합니다. 체험: <a href="https://hermitcrm.io/" target="_blank" rel="noopener noreferrer">공개 사이트 보기</a></p><p class="posttitle">혼자 하는 영업, 엑셀 대신 AI가 정리하는 고객 관리</p></div>
+      <div class="card"><div class="rank">#2</div><h3><a href="https://www.reddit.com/r/SideProject/comments/1y3x6rv/editflip_i_got_tired_of_free_pdf_sites_that/" target="_blank" rel="noopener noreferrer">EditFlip</a></h3><div class="tags"><span class="tag src-reddit">Reddit</span><span class="tag auto">업무자동화</span></div><p>PDF 편집·서명·합치기·압축 등 약 40개 도구를 가입과 업로드 없이 브라우저에서 처리합니다.</p><p class="why">누구나 겪는 PDF 업무를 다룹니다. 작성자가 파일이 서버로 가지 않는다고 설명했고, 직접 검증한 것은 아닙니다. 공개 사이트 주소는 글에서 확인하지 못했습니다.</p><p class="posttitle">PDF 편집, 돈 내라는 사이트 대신 브라우저에서 끝내기</p></div>
+      <div class="card"><div class="rank">#3</div><h3><a href="https://www.reddit.com/r/SideProject/comments/1y3xak2/i_made_4_free_skills_that_reshape_claudes_answers/" target="_blank" rel="noopener noreferrer">EveryMind</a></h3><div class="tags"><span class="tag src-reddit">Reddit</span><span class="tag vibe">바이브코딩</span></div><p>Claude의 답변을 짧은 줄·쉬운 말로 바꿔 주는 무료 지시 파일 4종입니다.</p><p class="why">코딩 없이 “AI에게 이렇게 답해 줘”를 파일로 저장해 두는 방식을 보여 주기 좋습니다. 공개 저장소가 있습니다. 체험: <a href="https://github.com/dagdog16-beep/everymind" target="_blank" rel="noopener noreferrer">공개 저장소 보기</a></p><p class="posttitle">AI 답변이 너무 어렵다면, 쉬운 말 전용 설정 파일 만들기</p></div>
+      <div class="card"><div class="rank">#4</div><h3><a href="https://www.reddit.com/r/vibecoding/comments/1y3jskn/the_ultimate_game_engine_for_vibe_coding_free_no/" target="_blank" rel="noopener noreferrer">Gen Gaming 게임 엔진</a></h3><div class="tags"><span class="tag src-reddit">Reddit</span><span class="tag vibe">바이브코딩</span></div><p>내 AI 에이전트를 연결해 게임을 반복해서 만드는 무료 게임 엔진입니다.</p><p class="why">r/vibecoding 쇼케이스 글이고 추천 47, 댓글 10입니다. 토큰 30% 절약은 작성자의 주장이라 소개할 때 그렇게 밝혀야 합니다. 체험: <a href="http://gengaming.net/" target="_blank" rel="noopener noreferrer">공개 사이트 보기</a></p><p class="posttitle">AI와 대화하며 게임 만들기, 전용 엔진 써 보기</p></div>
+      <div class="card"><div class="rank">#5</div><h3><a href="https://www.producthunt.com/products/motionflare" target="_blank" rel="noopener noreferrer">Motionflare</a></h3><div class="tags"><span class="tag src-ph">Product Hunt</span><span class="tag auto">업무자동화</span></div><p>웹사이트 주소만 넣으면 소개 영상을 몇 분 만에 만들어 주는 서비스입니다.</p><p class="why">Product Hunt 11월 23일 목록 3위, 추천 230표입니다. 영상 편집을 모르는 사람의 반복 홍보 작업을 줄이는 소재입니다. 체험: <a href="https://motionflare.ai/" target="_blank" rel="noopener noreferrer">제품 사이트 보기</a></p><p class="posttitle">홈페이지 주소만 넣으면 홍보 영상이 뚝딱</p></div>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="github">GitHub Trending</button>
+    <button class="tab-btn" data-tab="ph">Product Hunt</button>
+    <button class="tab-btn" data-tab="hn">Show HN</button>
+    <button class="tab-btn" data-tab="reddit">Reddit</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-github">
+
+    <!-- 오늘 스타 증가 바 차트, 전체 목록 수만큼 -->
+    <section>
+      <h2>오늘 스타 많이 늘어난 순 (전체 16개)</h2>
+      <div class="barlist">
+        <!-- .barrow 블록: name, bartrack > barfill(width:%는 최댓값 기준 상대값), val -->
+<div class="barrow"><div class="name">Claude-BugHunter</div><div class="bartrack"><div class="barfill" style="width:100.0%"></div></div><div class="val">2,029</div></div>
+        <div class="barrow"><div class="name">superpowers</div><div class="bartrack"><div class="barfill" style="width:41.4%"></div></div><div class="val">840</div></div>
+        <div class="barrow"><div class="name">CLI-Anything</div><div class="bartrack"><div class="barfill" style="width:38.9%"></div></div><div class="val">790</div></div>
+        <div class="barrow"><div class="name">minimind</div><div class="bartrack"><div class="barfill" style="width:40.8%"></div></div><div class="val">828</div></div>
+        <div class="barrow"><div class="name">plugins</div><div class="bartrack"><div class="barfill" style="width:19.6%"></div></div><div class="val">397</div></div>
+        <div class="barrow"><div class="name">firecrawl</div><div class="bartrack"><div class="barfill" style="width:45.5%"></div></div><div class="val">924</div></div>
+        <div class="barrow"><div class="name">nginx</div><div class="bartrack"><div class="barfill" style="width:8.6%"></div></div><div class="val">174</div></div>
+        <div class="barrow"><div class="name">openvino</div><div class="bartrack"><div class="barfill" style="width:9.1%"></div></div><div class="val">184</div></div>
+        <div class="barrow"><div class="name">diagram-design</div><div class="bartrack"><div class="barfill" style="width:30.6%"></div></div><div class="val">620</div></div>
+        <div class="barrow"><div class="name">last30days-skill</div><div class="bartrack"><div class="barfill" style="width:39.3%"></div></div><div class="val">797</div></div>
+        <div class="barrow"><div class="name">stitch-skills</div><div class="bartrack"><div class="barfill" style="width:20.8%"></div></div><div class="val">422</div></div>
+        <div class="barrow"><div class="name">app-store-compliance</div><div class="bartrack"><div class="barfill" style="width:37.5%"></div></div><div class="val">761</div></div>
+        <div class="barrow"><div class="name">opensre</div><div class="bartrack"><div class="barfill" style="width:21.5%"></div></div><div class="val">436</div></div>
+        <div class="barrow"><div class="name">AFFiNE</div><div class="bartrack"><div class="barfill" style="width:29.3%"></div></div><div class="val">595</div></div>
+        <div class="barrow"><div class="name">Ghost-Downloader-3</div><div class="bartrack"><div class="barfill" style="width:53.6%"></div></div><div class="val">1,087</div></div>
+        <div class="barrow"><div class="name">autoclip</div><div class="bartrack"><div class="barfill" style="width:44.7%"></div></div><div class="val">907</div></div>
+      </div>
+      <p class="barnote">GitHub Trending 페이지에 표시된 오늘의 스타 증가 수 · GitHub Trending 일간 전체 언어 · 2026-11-24 09:00:45 KST 확인 · README는 09:02 KST 확인 · 연속 일수는 11월 23일 기록에 하루를 더한 최소값입니다. 16개 모두 어제 목록에도 있어 새 소식 없이 반복된 항목은 추천에서 뺐습니다. 독자 태그·활용도는 이전 편집 판단을 이어받았습니다.</p>
+    </section>
+
+    <!-- SOUL.md 정리형식 2: 전체 목록 표. "연속" 열에 며칠째 트렌딩인지 표시(어제 비교 표는 더 이상 따로 만들지 않음) -->
+    <section>
+      <h2>전체 목록</h2>
+      <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>레포</th><th class="num">오늘★</th><th class="num">전체★</th><th>연속</th><th>독자</th><th>활용도</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <!-- 행마다: td.repo a(배지 없이 링크만), num×2, 연속 열은 2일+면 <span class="streak-badge">N일째</span>, 첫 등장이면 <span class="streak-badge new">신규</span>, 독자 태그(.tag.vibe/.auto/.ref 또는 .tagstack), .fit high/mid/low, td.desc -->
+<tr><td>1</td><td class="repo"><a href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank" rel="noopener noreferrer">elementalsouls/Claude-BugHunter</a></td><td class="num">2,029</td><td class="num">19,714</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low" title="보안 검토 경험과 별도 개발 환경이 필요합니다."><span class="dot"></span>하</span></td><td class="desc">Claude Code에서 보안 전문가의 검토를 돕는 기능 모음입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>2</td><td class="repo"><a href="https://github.com/obra/superpowers" target="_blank" rel="noopener noreferrer">obra/superpowers</a></td><td class="num">840</td><td class="num">325,037</td><td><span class="streak-badge">7일째+</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit mid" title="AI로 코드를 만드는 분이 작업을 작은 단계로 나눌 때 쓸 수 있습니다."><span class="dot"></span>중</span></td><td class="desc">AI 코딩 도구가 요구사항을 묻고, 계획을 세우고, 테스트를 작성하는 순서를 안내합니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>3</td><td class="repo"><a href="https://github.com/HKUDS/CLI-Anything" target="_blank" rel="noopener noreferrer">HKUDS/CLI-Anything</a></td><td class="num">790</td><td class="num">63,601</td><td><span class="streak-badge">6일째+</span></td><td><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></td><td><span class="fit mid" title="연결 사례는 웹에서 볼 수 있고, 실제 작업 자동화에는 명령줄이 필요합니다."><span class="dot"></span>중</span></td><td class="desc">AI가 여러 앱을 명령줄로 조작할 수 있도록 연결 도구를 만들고 찾아 쓰는 프로젝트입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>4</td><td class="repo"><a href="https://github.com/jingyaogong/minimind" target="_blank" rel="noopener noreferrer">jingyaogong/minimind</a></td><td class="num">828</td><td class="num">69,435</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low" title="AI 모델 학습을 직접 공부하려는 개발자에게 맞습니다."><span class="dot"></span>하</span></td><td class="desc">작은 언어 모델을 처음부터 학습시키는 예제와 코드를 제공합니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>5</td><td class="repo"><a href="https://github.com/cursor/plugins" target="_blank" rel="noopener noreferrer">cursor/plugins</a></td><td class="num">397</td><td class="num">18,793</td><td><span class="streak-badge">7일째+</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit mid" title="Cursor 사용자는 어떤 반복 작업을 추가 기능에 맡길 수 있는지 살펴볼 수 있습니다."><span class="dot"></span>중</span></td><td class="desc">Cursor에서 쓰는 공식 추가 기능과 이를 만드는 규칙을 모아 둡니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>6</td><td class="repo"><a href="https://github.com/firecrawl/firecrawl" target="_blank" rel="noopener noreferrer">firecrawl/firecrawl</a></td><td class="num">924</td><td class="num">207,895</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit mid" title="공개 실습 화면에서 자료 정리를 시험할 수 있고 자동화 연결에는 설정이 필요합니다."><span class="dot"></span>중</span></td><td class="desc">웹페이지의 글과 링크를 추출해 검색과 데이터 정리에 쓸 수 있게 만듭니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>7</td><td class="repo"><a href="https://github.com/nginx/nginx" target="_blank" rel="noopener noreferrer">nginx/nginx</a></td><td class="num">174</td><td class="num">33,047</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low" title="서비스를 운영하는 개발자와 서버 관리자에게 맞습니다."><span class="dot"></span>하</span></td><td class="desc">웹사이트에 들어온 요청을 받고 필요에 따라 다른 서버로 전달하는 웹 서버입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>8</td><td class="repo"><a href="https://github.com/openvinotoolkit/openvino" target="_blank" rel="noopener noreferrer">openvinotoolkit/openvino</a></td><td class="num">184</td><td class="num">12,276</td><td><span class="streak-badge">6일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low" title="AI 모델과 실행 환경을 다루는 개발자용입니다."><span class="dot"></span>하</span></td><td class="desc">이미 학습된 AI 모델을 기기에서 빠르게 실행하도록 바꾸고 배포하는 도구입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>9</td><td class="repo"><a href="https://github.com/cathrynlavery/diagram-design" target="_blank" rel="noopener noreferrer">cathrynlavery/diagram-design</a></td><td class="num">620</td><td class="num">70,949</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag vibe">바이브코딩</span><span class="tag auto">업무자동화</span></td><td><span class="fit high" title="설치 없이 갤러리에서 업무 순서나 구조를 그린 예를 볼 수 있습니다."><span class="dot"></span>상</span></td><td class="desc">AI 코딩 도구에 설명을 주고 순서도나 조직도를 HTML로 만들 수 있습니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>10</td><td class="repo"><a href="https://github.com/mvanhorn/last30days-skill" target="_blank" rel="noopener noreferrer">mvanhorn/last30days-skill</a></td><td class="num">797</td><td class="num">73,423</td><td><span class="streak-badge">7일째+</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit mid" title="매주 주제를 조사하는 업무에 맞고, 예약 조사를 쓰려면 호환되는 도구 설정이 필요합니다."><span class="dot"></span>중</span></td><td class="desc">여러 커뮤니티에서 최근 30일 동안 나온 글을 모아 출처와 함께 정리합니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>11</td><td class="repo"><a href="https://github.com/google-labs-code/stitch-skills" target="_blank" rel="noopener noreferrer">google-labs-code/stitch-skills</a></td><td class="num">422</td><td class="num">12,269</td><td><span class="streak-badge">7일째+</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit mid" title="화면 디자인을 코드로 옮기는 작업에 맞고 추가 연결이 필요합니다."><span class="dot"></span>중</span></td><td class="desc">Google Stitch에서 만든 화면을 AI 코딩 도구로 이어 작업하는 기능 모음입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>12</td><td class="repo"><a href="https://github.com/mjmirza/app-store-compliance" target="_blank" rel="noopener noreferrer">mjmirza/app-store-compliance</a></td><td class="num">761</td><td class="num">4,942</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag vibe">바이브코딩</span></td><td><span class="fit high" title="앱을 처음 제출하는 사람도 공개 체크리스트를 바로 읽을 수 있습니다."><span class="dot"></span>상</span></td><td class="desc">앱을 스토어에 내기 전에 흔한 심사 반려 사유를 점검하는 안내서입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>13</td><td class="repo"><a href="https://github.com/Tracer-Cloud/opensre" target="_blank" rel="noopener noreferrer">Tracer-Cloud/opensre</a></td><td class="num">436</td><td class="num">14,821</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit low" title="배포 흐름과 서버 로그를 다루는 개발자에게 맞습니다."><span class="dot"></span>하</span></td><td class="desc">서비스 배포와 운영 중 생긴 문제를 확인하는 데 쓰는 공개 도구입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>14</td><td class="repo"><a href="https://github.com/toeverything/AFFiNE" target="_blank" rel="noopener noreferrer">toeverything/AFFiNE</a></td><td class="num">595</td><td class="num">77,376</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit high" title="회의 메모에서 할 일을 옮겨 정리하는 흐름을 브라우저에서 살펴볼 수 있습니다."><span class="dot"></span>상</span></td><td class="desc">문서, 작업표, 화이트보드를 한 공간에서 쓰는 도구입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>15</td><td class="repo"><a href="https://github.com/XiaoYouChR/Ghost-Downloader-3" target="_blank" rel="noopener noreferrer">XiaoYouChR/Ghost-Downloader-3</a></td><td class="num">1,087</td><td class="num">16,287</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag ref">참고</span></td><td><span class="fit mid" title="영상으로 화면을 볼 수 있고 실제 사용은 프로그램 설치가 필요합니다."><span class="dot"></span>중</span></td><td class="desc">여러 파일 다운로드를 한곳에서 관리하는 데스크톱 도구입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+<tr><td>16</td><td class="repo"><a href="https://github.com/zhouxiaoka/autoclip" target="_blank" rel="noopener noreferrer">zhouxiaoka/autoclip</a></td><td class="num">907</td><td class="num">14,368</td><td><span class="streak-badge">5일째+</span></td><td><span class="tag auto">업무자동화</span></td><td><span class="fit mid" title="만들어진 클립을 웹에서 볼 수 있고 직접 편집하려면 데스크톱 앱이 필요합니다."><span class="dot"></span>중</span></td><td class="desc">긴 영상에서 짧은 클립 후보를 골라 자막과 표지 초안을 만드는 도구입니다.<br><small>순위에 오른 직접적인 이유는 확인되지 않았습니다.</small></td></tr>
+
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-ph">
+
+    <!-- Product Hunt: GitHub과 성격이 달라서 탭으로 분리, 표 구조는 동일한 규칙 재사용 -->
+    <section>
+      <h2>오늘의 프로덕트헌트 신제품 (Top 10)</h2>
+      <p class="note">GitHub은 오픈소스 코드·라이브러리 중심이라 개발자 느낌이 강한 반면, Product Hunt는 바로 써볼 수 있는 완성된 서비스·앱이 많아 비전공자 콘텐츠에 보완적입니다.</p>
+      <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>제품</th><th>카테고리</th><th class="num">오늘 추천수</th><th class="num">댓글</th><th>독자</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <!-- 행마다: td.repo에 제품명과 공식 목록에서 확인한 제품·출시 상세 링크, 카테고리, 추천수, 댓글 수, 독자 태그, 설명. 상세를 확인할 수 없으면 제품명은 링크 없는 텍스트로 표시. 상단 추천 카드에도 같은 상세 링크를 사용. -->
+<tr><td>1</td><td class="repo"><a href="https://www.producthunt.com/products/visitors" target="_blank" rel="noopener noreferrer">Letter Visitors</a></td><td>Marketing · Developer Tools</td><td class="num">319</td><td class="num">52</td><td><span class="tag ref">참고</span></td><td class="desc">내 웹사이트를 누가 보고 있는지, 어느 회사 사람인지 알려 주는 서비스입니다.</td></tr>
+<tr><td>2</td><td class="repo"><a href="https://www.producthunt.com/products/gauth-ai-course" target="_blank" rel="noopener noreferrer">Gauth Personal Study Agent</a></td><td>Android · Education · Artificial Intelligence</td><td class="num">245</td><td class="num">47</td><td><span class="tag ref">참고</span></td><td class="desc">학생이 어디서 막히는지 기억하는 AI 공부 도우미입니다.</td></tr>
+<tr><td>3</td><td class="repo"><a href="https://www.producthunt.com/products/motionflare" target="_blank" rel="noopener noreferrer">Motionflare</a></td><td>Marketing · Artificial Intelligence · Video</td><td class="num">230</td><td class="num">38</td><td><span class="tag auto">업무자동화</span></td><td class="desc">내 웹사이트 주소만 넣으면 소개 영상을 몇 분 만에 만들어 주는 서비스입니다.</td></tr>
+<tr><td>4</td><td class="repo"><a href="https://www.producthunt.com/products/modem" target="_blank" rel="noopener noreferrer">Modem</a></td><td>Customer Success · Developer Tools · Artificial Intelligence · MCP</td><td class="num">190</td><td class="num">27</td><td><span class="tag ref">참고</span></td><td class="desc">고객 문의 채널을 살펴 놓친 문제를 찾아 팀에 넘겨 주는 서비스입니다.</td></tr>
+<tr><td>5</td><td class="repo"><a href="https://www.producthunt.com/products/dog-translator-supertranslator" target="_blank" rel="noopener noreferrer">Dog Translator SuperTranslator</a></td><td>Pets · Artificial Intelligence · Science</td><td class="num">172</td><td class="num">28</td><td><span class="tag ref">참고</span></td><td class="desc">강아지 소리를 영어 말로 바꿔 보여 주는 재미용 앱입니다.</td></tr>
+<tr><td>6</td><td class="repo"><a href="https://www.producthunt.com/products/polylane" target="_blank" rel="noopener noreferrer">Polylane Swarms</a></td><td>Developer Tools · Artificial Intelligence · MCP</td><td class="num">126</td><td class="num">13</td><td><span class="tag ref">참고</span></td><td class="desc">서비스 장애가 났을 때 AI 에이전트 팀이 원인을 찾아 돕는 개발자용 도구입니다.</td></tr>
+<tr><td>7</td><td class="repo">Inkling 2 Mini</td><td>Open Source · Artificial Intelligence · Development</td><td class="num">118</td><td class="num">3</td><td><span class="tag ref">참고</span></td><td class="desc">노트북에서 코딩용으로 돌리는 26B 크기 AI 모델입니다. 상세 페이지 이름이 목록과 달라 링크는 넣지 않았습니다.</td></tr>
+<tr><td>8</td><td class="repo"><a href="https://www.producthunt.com/products/chat-with-work" target="_blank" rel="noopener noreferrer">Chat with Work</a></td><td>Productivity · Artificial Intelligence · Bots</td><td class="num">118</td><td class="num">9</td><td><span class="tag auto">업무자동화</span></td><td class="desc">유럽에서 운영되는 업무용 AI 봇 서비스로, 사람이 최종 결정을 합니다.</td></tr>
+<tr><td>9</td><td class="repo"><a href="https://www.producthunt.com/products/hydrilla" target="_blank" rel="noopener noreferrer">Hydrilla</a></td><td>Developer Tools · Artificial Intelligence · 3D Modeling</td><td class="num">104</td><td class="num">11</td><td><span class="tag ref">참고</span></td><td class="desc">AI로 바로 쓸 수 있는 3D 소품을 만들어 주는 서비스입니다.</td></tr>
+<tr><td>10</td><td class="repo"><a href="https://www.producthunt.com/products/journalistic-tech" target="_blank" rel="noopener noreferrer">Journalistic Tech</a></td><td>Writing · Developer Tools · Tech</td><td class="num">104</td><td class="num">5</td><td><span class="tag ref">참고</span></td><td class="desc">비동기 인터뷰로 기사를 내게 도와주는 서비스입니다.</td></tr>
+
+        </tbody>
+      </table>
+      </div>
+      <p class="barnote">Product Hunt에 표시된 추천수와 댓글 수 · Product Hunt 홈의 “오늘” 목록(09:01 KST 전후 확인, 초 단위 미기록)은 공식 일간 순위표 2026년 11월 23일과 일치합니다(09:01 KST). 11월 24일 순위표는 “No posts for this date”였습니다. 프로모션 항목은 순위에서 뺐고, 제품 상세 제목은 09:01 KST에 하나씩 열어 확인했습니다. 7위 Inkling 2 Mini는 연결된 상세 페이지 이름이 달라(Tinker) 링크를 넣지 않았습니다. 추천수와 댓글 수는 목록에 표시된 값입니다.</p>
+    </section>
+
+  </div>
+
+  <!-- Show HN은 매일 오전 9시 수집에서 확인. 새로 소개할 만한 글이 있는 날에만 탭 버튼, 패널, 해당 각주 출처를 추가. 며칠 전 소개한 프로젝트는 중요한 새 소식이 있을 때만 다시 소개. -->
+  <div class="tab-panel" id="tab-hn">
+    <section>
+      <h2>Show HN에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>원문 순위</th><th>프로젝트</th><th class="num">포인트</th><th class="num">댓글</th><th>독자</th><th>설명</th><th>체험</th></tr>
+          </thead>
+          <tbody>
+            <!-- Show HN 목록에서 바이브코딩·업무자동화에 맞는 항목만. 프로젝트명은 HN 토론 글에 연결. 포인트·댓글은 수집 시점 표시값을 쓰고 숫자 미표시는 —. 공개 예제·데모 링크가 확인되면 체험 열에 추가. 해당 항목이 없거나 출처를 열지 못하면 그 상태를 한 행에 표시. -->
+<tr><td>show</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50609708" target="_blank" rel="noopener noreferrer">Hermit CRM</a></td><td class="num">34</td><td class="num">2</td><td><span class="tag auto">업무자동화</span></td><td class="desc">고객·영업 진행·할 일을 내 노트북의 일반 문서 파일로 관리하는 무료 오픈소스 영업 관리 도구입니다. AI에게 말로 내 방식에 맞게 바꾸라고 시킬 수 있다고 소개합니다.</td><td><a href="https://hermitcrm.io/" target="_blank" rel="noopener noreferrer">공개 사이트</a></td></tr>
+<tr><td>shownew</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50619761" target="_blank" rel="noopener noreferrer">Budget</a></td><td class="num">2</td><td class="num">—</td><td><span class="tag ref">참고</span></td><td class="desc">데이터가 내 컴퓨터 밖으로 나가지 않는 가계부 앱입니다.</td><td><a href="https://github.com/hendrikdemir/budget" target="_blank" rel="noopener noreferrer">공개 저장소</a></td></tr>
+<tr><td>show</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50616600" target="_blank" rel="noopener noreferrer">Certyneo PDF 리더</a></td><td class="num">2</td><td class="num">1</td><td><span class="tag ref">참고</span></td><td class="desc">설치와 가입 없이 브라우저에서 PDF를 열고 검색하는 무료 리더입니다.</td><td><a href="https://certyneo.com/en/tools/lecteur-pdf" target="_blank" rel="noopener noreferrer">공개 사이트</a></td></tr>
+<tr><td>shownew</td><td class="repo"><a href="https://news.ycombinator.com/item?id=50619720" target="_blank" rel="noopener noreferrer">Offthread</a></td><td class="num">2</td><td class="num">—</td><td><span class="tag ref">참고</span></td><td class="desc">AI에게 보내기 전에 개인정보를 브라우저에서 가려 주는 익명 AI 채팅입니다. 사이트가 가리는 기능이 놓칠 수 있다고 안내합니다.</td><td><a href="https://offthread.chat" target="_blank" rel="noopener noreferrer">공개 사이트</a></td></tr>
+
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">news.ycombinator.com/show·shownew를 2026-11-24 09:00:45 KST에 읽었습니다. 포인트·댓글은 그 시각에 표시된 값이며 숫자가 없으면 —입니다. 토론 글과 공개 페이지는 09:02 KST에 확인했습니다.</p>
+    </section>
+  </div>
+
+  <!-- Reddit은 매일 오전 9시 수집에서 r/SideProject와 r/vibecoding의 최신·주간 인기 글, r/vibecoding의 주간 쇼케이스를 확인. 바이브코딩 제작 과정이나 실제 반복 업무 개선을 설명하고 공개 데모·영상·코드가 있는 글 우선. 프로젝트 제목은 원문 글 또는 쇼케이스 댓글에 직접 연결. 새로 소개할 만한 글이 있는 날에만 탭 버튼, 패널, 해당 각주 출처를 추가. -->
+  <div class="tab-panel" id="tab-reddit">
+    <section>
+      <h2>Reddit에서 고른 프로젝트</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>커뮤니티</th><th>프로젝트</th><th>독자</th><th>콘텐츠 각도</th><th>데모·코드</th></tr>
+          </thead>
+          <tbody>
+            <!-- 행마다: 출처 커뮤니티, td.repo a(원문), 독자 태그, td.desc(비전공자가 얻을 팁), 공개 데모·영상·코드 링크. 확인할 수 있는 글이 없으면 그 상태를 표시. -->
+<tr><td>r/SideProject</td><td class="repo"><a href="https://www.reddit.com/r/SideProject/comments/1y3x6rv/editflip_i_got_tired_of_free_pdf_sites_that/" target="_blank" rel="noopener noreferrer">EditFlip</a></td><td><span class="tag auto">업무자동화</span></td><td class="desc">PDF 편집·서명·합치기·압축 등 약 40개 도구를 가입 없이 브라우저 안에서 처리합니다. 파일이 서버로 가지 않는 것을 개발자 도구로 확인할 수 있다고 설명합니다. 광고는 아직 켜지 않았다고 합니다.</td><td>미확인</td></tr>
+<tr><td>r/SideProject</td><td class="repo"><a href="https://www.reddit.com/r/SideProject/comments/1y3xak2/i_made_4_free_skills_that_reshape_claudes_answers/" target="_blank" rel="noopener noreferrer">EveryMind</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">Claude의 답변을 짧은 줄·쉬운 말로 바꿔 주는 무료 지시 파일 4종입니다. 사실은 바꾸지 않고 말하는 모양만 바꾼다고 설명합니다.</td><td><a href="https://github.com/dagdog16-beep/everymind" target="_blank" rel="noopener noreferrer">공개 저장소</a></td></tr>
+<tr><td>r/vibecoding</td><td class="repo"><a href="https://www.reddit.com/r/vibecoding/comments/1y3jskn/the_ultimate_game_engine_for_vibe_coding_free_no/" target="_blank" rel="noopener noreferrer">Gen Gaming 게임 엔진</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">내 AI 에이전트를 연결해 게임을 반복해서 만드는 무료 게임 엔진입니다. 작성자는 기존 방식보다 토큰을 약 30% 아낀다고 주장하는데, 직접 확인한 수치는 아닙니다.</td><td><a href="http://gengaming.net/" target="_blank" rel="noopener noreferrer">공개 사이트</a></td></tr>
+<tr><td>r/SideProject</td><td class="repo"><a href="https://www.reddit.com/r/SideProject/comments/1y3xc73/made_a_self_hosted_ebook_to_audiobook_studio_for/" target="_blank" rel="noopener noreferrer">meowdiobooks</a></td><td><span class="tag ref">참고</span></td><td class="desc">PDF·EPUB 책을 등장인물마다 다른 목소리의 오디오북으로 만드는 맥용 도구입니다. 시범 음성은 저장소 설명에 있다고 합니다.</td><td><a href="https://github.com/PetarKing/meowdiobooks" target="_blank" rel="noopener noreferrer">공개 저장소</a></td></tr>
+
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">r/SideProject·r/vibecoding 최신 및 주간 인기 글을 2026-11-24 09:01~09:02 KST에, 소개 글 4건은 09:02 KST에 열어 확인했습니다. r/vibecoding 주간 쇼케이스 글은 이번에 별도로 확인하지 못했고, 쇼케이스 표시가 있는 글 1건(Gen Gaming)을 목록에서 골랐습니다.</p>
+    </section>
+  </div>
+
+  <footer>
+    데이터 출처: <a href="https://github.com/trending" target="_blank" style="color:inherit;">github.com/trending</a> · <a href="https://www.producthunt.com" target="_blank" style="color:inherit;">producthunt.com</a> · <a href="https://news.ycombinator.com/show" target="_blank" style="color:inherit;">Show HN</a> · Reddit <a href="https://www.reddit.com/r/SideProject/top/?t=week" target="_blank" style="color:inherit;">r/SideProject</a>·<a href="https://www.reddit.com/r/vibecoding/" target="_blank" style="color:inherit;">r/vibecoding</a>
+  </footer>
+
+</div>
+<script>
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
