@@ -86,6 +86,7 @@
   .tag.src-gh{background:var(--surface-muted); color:var(--on-surface-variant); border:1px solid var(--outline-variant);}
   .tag.src-ph{background:var(--warning-container); color:var(--warning);}
   .tag.src-hn{background:var(--secondary); color:var(--on-secondary); border:1px solid var(--outline);}
+  .tag.src-threads{background:var(--secondary); color:var(--on-secondary); border:1px solid var(--outline);}
   .tag.src-reddit{background:var(--error-container); color:var(--error);}
   .tagstack{display:flex; gap:4px; flex-wrap:wrap;}
   /* 연속 트렌딩 배지: 2일 이상이면 success색, 첫 등장이면 "신규"(무채색) */
@@ -178,6 +179,7 @@
     <button class="tab-btn" data-tab="ph">Product Hunt</button>
     <button class="tab-btn" data-tab="hn">Show HN</button>
     <button class="tab-btn" data-tab="reddit">Reddit</button>
+    <button class="tab-btn" data-tab="threads">Threads</button>
   </div>
 
   <div class="tab-panel active" id="tab-github">
@@ -348,8 +350,36 @@
     </section>
   </div>
 
+  <div class="tab-panel" id="tab-threads">
+    <section>
+      <h2>Threads 추천 피드에서 고른 글</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>작성자</th><th>글</th><th>독자</th><th>내용과 확인 상태</th></tr>
+          </thead>
+          <tbody>
+<tr><td>@zemma.selfishclub</td><td class="repo"><a href="https://www.threads.com/@zemma.selfishclub/post/DgMzI4rGai_" target="_blank" rel="noopener noreferrer">경쟁사 광고를 AI 브라우저로 찾아 읽는 방법</a></td><td><span class="tag auto">업무자동화</span></td><td class="desc">오래 켜져 있는 경쟁사 광고를 내 광고의 정답지로 삼고, Meta 광고 라이브러리를 AI 브라우저에 열어 읽게 합니다. 바로 시키지 말고 먼저 내 사업을 인터뷰하게 하라는 순서가 핵심입니다.<br><small>광고 라이브러리가 로그인 없이 공개라는 점은 작성자 설명이며 직접 확인하지 않았습니다.</small></td></tr>
+<tr><td>@sonjari.dev</td><td class="repo"><a href="https://www.threads.com/@sonjari.dev/post/DgNbwT_gEsA" target="_blank" rel="noopener noreferrer">Claude·Codex 한도를 덜 쓰는 에이전트 제작기</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">1년 반 동안 만들어 지난달 출시한 브라우저·코딩 에이전트 제작기입니다. 일을 통째로 받아 끝까지 하게 만드는 데 평가·수정을 반복했다는 이야기가 소재입니다.<br><small>토큰 절약 효과는 작성자 주장이고 제품명과 링크는 글에서 확인하지 못했습니다.</small></td></tr>
+<tr><td>@neulremote.app</td><td class="repo"><a href="https://www.threads.com/@neulremote.app/post/DgMoRX6nZv0" target="_blank" rel="noopener noreferrer">부모님 폰 원격 안내 앱 제작기</a></td><td><span class="tag ref">참고</span></td><td class="desc">부모님 폰 문제를 전화로 설명하다 답답해 직접 만든 안드로이드 원격제어 앱의 공개 테스트 소식입니다. 링크만 누르면 연결되고 화면에 동그라미를 그려 안내합니다.<br><small>다운로드 링크는 첫 댓글에 있다고 했고 열지 않았습니다. AI로 만들었는지는 글에 나와 있지 않습니다.</small></td></tr>
+<tr><td>@howznguyen</td><td class="repo"><a href="https://www.threads.com/@howznguyen/post/DgMsI_GD9zP" target="_blank" rel="noopener noreferrer">AI 티 나는 화면을 고치는 6가지 규칙</a></td><td><span class="tag vibe">바이브코딩</span></td><td class="desc">글꼴, 모서리, 테두리, 색, 높이, 움직임 6가지를 숫자와 전후 비교로 보여 줍니다. 영어 글이며 GitHub 월간·주제 검색의 ‘AI 티 줄이기’ 도구들과 같은 흐름입니다.<br><small>규칙의 구체적인 숫자는 글의 이미지에 있어 읽지 않았습니다.</small></td></tr>
+<tr><td>@lennox_saint</td><td class="repo"><a href="https://www.threads.com/@lennox_saint/post/DgNKX-Cm4Cd" target="_blank" rel="noopener noreferrer">AI 에이전트끼리 우편함으로 일 넘기기</a></td><td><span class="tag auto">업무자동화</span></td><td class="desc">컴퓨터에 우편함을 하나 두고 에이전트마다 주소를 줘서 사람을 거치지 않고 서로 일을 넘기게 하는 방법입니다. 영어 글이며 첫 화면의 4단계까지만 읽었습니다.<br><small>5개짜리 연결 글 중 1번째만 읽었습니다.</small></td></tr>
+<tr><td>@ddalkakdiary</td><td class="repo"><a href="https://www.threads.com/@ddalkakdiary/post/DgNBSdUvzCO" target="_blank" rel="noopener noreferrer">GPU 한 장으로 언어 모델을 처음부터 학습</a></td><td><span class="tag ref">참고</span></td><td class="desc">GitHub의 minimind가 엔비디아 3090 한 장으로 SFT 단계를 2시간에 끝냈고 GPU 대여료는 3위안이라는 소개입니다.<br><small>작성자가 쓴 하루 스타 826개는 11월 26일 GitHub 일간 기록과 같은 값입니다. 2시간·3위안은 작성자 주장입니다.</small></td></tr>
+<tr><td>@developk88</td><td class="repo"><a href="https://www.threads.com/@developk88/post/DgOxcZVD6T1" target="_blank" rel="noopener noreferrer">앱을 러스트로 옮기며 동작이 같은지 증명</a></td><td><span class="tag ref">참고</span></td><td class="desc">rust-anything이 원래 앱의 동작을 먼저 기록해 두고 조각마다 그 기록과 맞아야 다음으로 넘어가게 한다는 소개입니다.<br><small>GitHub 주제 검색(claude-code)에서 확인한 같은 저장소입니다. 개발자용입니다.</small></td></tr>
+<tr><td>@hoddukzoa</td><td class="repo"><a href="https://www.threads.com/@hoddukzoa/post/DgNlWjamBwo" target="_blank" rel="noopener noreferrer">코딩 에이전트 여러 개를 돌릴 때 VM 자동 배정</a></td><td><span class="tag ref">참고</span></td><td class="desc">T3 Code에서 에이전트를 여러 개 돌릴 때 프로젝트마다 클라우드 VM을 배정하고 쉬는 VM은 재우는 오픈소스 서버 소개입니다.<br><small>GitHub 월간의 pingdotgg/t3code와 이어지는 소식입니다. 개발자용입니다.</small></td></tr>
+<tr><td>@bob_coding</td><td class="repo"><a href="https://www.threads.com/@bob_coding/post/DgNn2QhGBzs" target="_blank" rel="noopener noreferrer">앱 출시가 늘고 있다는 통계</a></td><td><span class="tag ref">참고</span></td><td class="desc">2026년 1분기 신규 앱 출시가 전년보다 60% 늘었고 앱스토어 일일 신규 제출이 3,400개까지 올랐다는 글입니다.<br><small>수치는 작성자가 인용한 기사 내용이며 기사 원문은 확인하지 못했습니다.</small></td></tr>
+<tr><td>@choi.openai</td><td class="repo"><a href="https://www.threads.com/@choi.openai/post/DgMJKsdjX-n" target="_blank" rel="noopener noreferrer">값싼 영상 AI 모델 MAGI-2</a></td><td><span class="tag ref">참고</span></td><td class="desc">이미지 기반 영상 생성에서 공동 1위이고 가격이 약 7분의 1이라는 소개입니다. 1080p 영상과 음성을 초당 0.08달러에 만들 수 있다고 합니다.<br><small>순위와 가격은 작성자가 전한 값이며 직접 확인하지 않았습니다.</small></td></tr>
+<tr><td>@pm_anyway</td><td class="repo"><a href="https://www.threads.com/@pm_anyway/post/DgNAgt0IOoU" target="_blank" rel="noopener noreferrer">AI 모델 3종 실무 과제 비교</a></td><td><span class="tag ref">참고</span></td><td class="desc">실무 과제 25개로 제미나이 4 네온, GPT-6.2, 클로드를 붙여 81점 대 76점 대 72점이 나왔다는 글입니다.<br><small>작성자 자체 시험이고 과제와 채점 방식은 확인하지 못했습니다.</small></td></tr>
+<tr><td>@whynot_owners</td><td class="repo"><a href="https://www.threads.com/@whynot_owners/post/DgOR8yDk2v_" target="_blank" rel="noopener noreferrer">클로드 파트너 인증시험 11월까지 무료</a></td><td><span class="tag ref">참고</span></td><td class="desc">클로드 파트너 소속이라면 인증시험이 11월까지 무료라는 안내입니다.<br><small>공식 공지로 확인하지 못했습니다. 소개하려면 먼저 공식 안내를 확인해야 합니다.</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="barnote">로그인한 계정의 맞춤 추천 피드를 2026-11-27 13:28~13:30 KST에 읽기 전용으로 스크롤해 66개를 훑고 주제 관련 글 12건을 골랐습니다. 맞춤 피드라 다른 사람은 같은 목록을 볼 수 없습니다. 글 안의 수치와 주장은 작성자가 쓴 그대로이며 따로 적은 것 외에는 확인하지 않았습니다. 광고·홍보 성격(omo.dev 추천 글 2건, SVG 변환 도구 홍보 글)과 주제와 무관한 글(연예·맛집·부동산·팝업 등)은 뺐습니다.</p>
+    </section>
+  </div>
+
   <footer>
-    데이터 출처: <a href="https://github.com/trending" target="_blank" style="color:inherit;">github.com/trending</a> · <a href="https://www.producthunt.com" target="_blank" style="color:inherit;">producthunt.com</a> · <a href="https://news.ycombinator.com/show" target="_blank" style="color:inherit;">Show HN</a> · Reddit <a href="https://www.reddit.com/r/SideProject/top/?t=week" target="_blank" style="color:inherit;">r/SideProject</a>·<a href="https://www.reddit.com/r/vibecoding/" target="_blank" style="color:inherit;">r/vibecoding</a>
+    데이터 출처: <a href="https://github.com/trending" target="_blank" style="color:inherit;">github.com/trending</a> · <a href="https://www.producthunt.com" target="_blank" style="color:inherit;">producthunt.com</a> · <a href="https://news.ycombinator.com/show" target="_blank" style="color:inherit;">Show HN</a> · Threads · Reddit <a href="https://www.reddit.com/r/SideProject/top/?t=week" target="_blank" style="color:inherit;">r/SideProject</a>·<a href="https://www.reddit.com/r/vibecoding/" target="_blank" style="color:inherit;">r/vibecoding</a>
   </footer>
 
 </div>
